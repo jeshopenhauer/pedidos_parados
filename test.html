@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test CSV Filter</title>
+  <style>
+    body { 
+      font-family: Arial, sans-serif; 
+      padding: 20px; 
+      background: #f0f0f0;
+    }
+    .test-container {
+      background: white;
+      padding: 20px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    input[type="file"] {
+      margin: 10px 0;
+      padding: 10px;
+    }
+    button {
+      background: #007bff;
+      color: white;
+      border: none;
+      padding: 10px 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    #output {
+      background: #f8f9fa;
+      border: 1px solid #ddd;
+      padding: 10px;
+      margin-top: 10px;
+      white-space: pre-wrap;
+      font-family: monospace;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+    .status {
+      padding: 10px;
+      margin: 10px 0;
+      border-radius: 4px;
+    }
+    .success { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+    .error { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+  </style>
+</head>
+<body>
+  <h1>CSV Filter Function Test</h1>
+  
+  <div class="test-container">
+    <h2>Test with File Upload</h2>
+    <input type="file" id="fileInput" accept=".csv">
+    <button onclick="testWithFile()">Test Filter</button>
+    <div id="status"></div>
+    <div id="output"></div>
+  </div>
+
+  <div class="test-container">
+    <h2>Test with Sample Data</h2>
+    <button onclick="testWithSampleData()">Test with Sample CSV</button>
+    <div id="sampleOutput"></div>
+  </div>
+
+  <script>
+    // CSV Filter Function
+    function filterCsvColumns(csvText) {
+      console.log('filterCsvColumns called with text length:', csvText.length);
+      const lines = csvText.trim().split('\n');
+      if (lines.length === 0) return '';
+      const header = lines[0].split(',');
+      console.log('Header columns:', header.length);
+      const selectedIndices = [0, 1, 2, 3, 4, 11];
+      const filteredHeader = selectedIndices.map(i => header[i]).join(',');
+      const filteredRows = lines.slice(1).map(line => {
+        const cols = line.split(',');
+        return selectedIndices.map(i => cols[i]).join(',');
+      });
+      const result = [filteredHeader, ...filteredRows].join('\n');
+      console.log('Filtered result length:', result.length);
+      return result;
+    }
+
+    function testWithFile() {
+      const fileInput = document.getElementById('fileInput');
+      const file = fileInput.files[0];
+      const status = document.getElementById('status');
+      const output = document.getElementById('output');
+
+      if (!file) {
+        status.innerHTML = '<div class="error">Please select a file first!</div>';
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          const csvText = e.target.result;
+          console.log('File loaded, content:', csvText.substring(0, 200) + '...');
+          
+          const filtered = filterCsvColumns(csvText);
+          
+          status.innerHTML = `<div class="success">✅ Successfully processed "${file.name}"</div>`;
+          output.textContent = filtered;
+          
+          // Also create download link
+          const blob = new Blob([filtered], { type: 'text/csv' });
+          const url = URL.createObjectURL(blob);
+          const downloadLink = document.createElement('a');
+          downloadLink.href = url;
+          downloadLink.download = file.name.replace('.csv', '_filtered.csv');
+          downloadLink.textContent = 'Download Filtered CSV';
+          status.appendChild(downloadLink);
+          
+        } catch (error) {
+          console.error('Error:', error);
+          status.innerHTML = `<div class="error">❌ Error: ${error.message}</div>`;
+        }
+      };
+
+      reader.onerror = function() {
+        status.innerHTML = '<div class="error">❌ Error reading file</div>';
+      };
+
+      reader.readAsText(file);
+    }
+
+    function testWithSampleData() {
+      const sampleCsv = `Name,Age,City,Country,Job,Salary,Department,Years,Manager,Email,Phone,Total
+John,25,Madrid,Spain,Developer,50000,IT,3,Alice,john@test.com,123456,50000
+Jane,30,Paris,France,Designer,45000,Design,5,Bob,jane@test.com,789012,45000`;
+
+      console.log('Testing with sample data...');
+      const filtered = filterCsvColumns(sampleCsv);
+      
+      document.getElementById('sampleOutput').innerHTML = `
+        <h3>Original CSV:</h3>
+        <div style="background: #fff3cd; padding: 10px; font-family: monospace; white-space: pre-wrap;">${sampleCsv}</div>
+        <h3>Filtered CSV (columns 0,1,2,3,4,11):</h3>
+        <div style="background: #d1ecf1; padding: 10px; font-family: monospace; white-space: pre-wrap;">${filtered}</div>
+      `;
+    }
+  </script>
+</body>
+</html>

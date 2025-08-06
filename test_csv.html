@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Test CSV Filter</title>
+</head>
+<body>
+    <h1>Test CSV Filter</h1>
+    <div id="output"></div>
+
+    <script>
+        // Function to parse CSV line respecting quotes
+        function parseCSVLine(line) {
+            const result = [];
+            let current = '';
+            let inQuotes = false;
+            
+            for (let i = 0; i < line.length; i++) {
+                const char = line[i];
+                
+                if (char === '"') {
+                    inQuotes = !inQuotes;
+                } else if (char === ',' && !inQuotes) {
+                    result.push(current);
+                    current = '';
+                } else {
+                    current += char;
+                }
+            }
+            
+            result.push(current);
+            return result;
+        }
+
+        // CSV Filter Function
+        function filterCsvColumns(csvText) {
+            const lines = csvText.trim().split('\n');
+            if (lines.length === 0) return '';
+            
+            const header = parseCSVLine(lines[0]);
+            const selectedIndices = [0, 1, 2, 3, 4, 11];
+            
+            console.log('Header columns:');
+            selectedIndices.forEach(i => {
+                console.log(`Column ${i}: "${header[i]}"`);
+            });
+            
+            const filteredHeader = selectedIndices.map(i => header[i] || '').join(',');
+            
+            const filteredRows = lines.slice(1).map(line => {
+                const cols = parseCSVLine(line);
+                return selectedIndices.map(i => cols[i] || '').join(',');
+            });
+            
+            return [filteredHeader, ...filteredRows].join('\n');
+        }
+
+        // Test with sample CSV data
+        const testCSV = `Requisition #,Name,Date of document,Originated by,Status,Processing flow,Requisition type,Needed date,Shop for user,Invoicing company,Shipping address,Net total,Net total (Invoicing company currency)
+MTPR203970,Modificación PCB Logo 380,2024-10-01,francisco-miguel.toval@valeo.com,More information needed,Standard,New Requisition,2024-12-17,francisco-miguel.toval@valeo.com,MTPR,"C/ Linares, 15%0A23600  MARTOS (JAEN),",1700.00000,1700.0000000000000
+MTPR204024,Modificación carrier 380-2 SE316-38x,2024-10-01,francisco-miguel.toval@valeo.com,More information needed,Standard,New Requisition,2025-03-11,francisco-miguel.toval@valeo.com,MTPR,"C/ Linares, 15%0A23600  MARTOS (JAEN),",11132.00000,11132.0000000000000`;
+
+        const filtered = filterCsvColumns(testCSV);
+        console.log('\nFiltered CSV:');
+        console.log(filtered);
+
+        // Show in HTML
+        document.getElementById('output').innerHTML = `
+            <h3>Original CSV (first 3 lines):</h3>
+            <pre>${testCSV.split('\n').slice(0, 3).join('\n')}</pre>
+            <h3>Filtered CSV:</h3>
+            <pre>${filtered}</pre>
+        `;
+    </script>
+</body>
+</html>

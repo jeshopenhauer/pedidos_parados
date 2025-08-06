@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CSV Report Manager</title>
+  <link rel="stylesheet" href="style.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+</head>
+<body>
+  <div class="container">
+    <header class="header">
+      <div class="header-content">
+        <h1 class="header-title">
+          <i class="fas fa-file-csv"></i>
+          Report Manager
+        </h1>
+      </div>
+    </header>
+
+    <main class="main-content">
+      <!-- Panel para importar CSV -->
+      <section class="upload-section">
+        <div class="upload-card">
+          <div class="upload-icon">
+            <i class="fas fa-cloud-upload-alt"></i>
+          </div>
+          <h2 class="upload-title">Import CSV File</h2>
+          
+          <div class="file-input-wrapper">
+            <input type="file" id="csvInput" accept=".csv" class="file-input" />
+            <label for="csvInput" class="file-input-label">
+              <i class="fas fa-plus"></i>
+              Choose File
+            </label>
+          </div>
+          
+          <div class="upload-info">
+            <div class="info-item">
+              <i class="fas fa-info-circle"></i>
+              <span>Supported format: .csv files</span>
+            </div>
+            <div class="info-item">
+              <i class="fas fa-filter"></i>
+              <span>Automatic filtering: 6 key columns selected</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel para gestionar reportes -->
+      <section class="reports-section">
+        <div class="reports-card">
+          <div class="reports-header">
+            <div class="reports-title-group">
+              <h2 class="reports-title">
+                <i class="fas fa-chart-line"></i>
+                My Reports
+              </h2>
+              <span class="reports-count" id="reportsCount">0 reports</span>
+            </div>
+            <div class="reports-actions">
+              <button class="action-btn edit-btn" title="Edit Selected">
+                <i class="fas fa-edit"></i>
+              </button>
+              <button class="action-btn delete-btn" title="Delete Selected">
+                <i class="fas fa-trash-alt"></i>
+              </button>
+              <button class="action-btn refresh-btn" title="Refresh">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="reports-content">
+            <div id="reportsList" class="reports-list">
+              <!-- Las entradas de reportes serán generadas dinámicamente -->
+              <div class="empty-state">
+                <div class="empty-state-icon">
+                  <i class="fas fa-inbox"></i>
+                </div>
+                <h3 class="empty-state-title">No reports yet</h3>
+                <p class="empty-state-description">Upload a CSV file to get started</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <script src="script.js"></script>
+</body>
+</html>

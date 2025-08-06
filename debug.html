@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Debug CSV Manager</title>
+  <style>
+    body { font-family: Arial, sans-serif; padding: 20px; background: #87ceeb; }
+    .container { max-width: 800px; margin: 0 auto; background: white; padding: 20px; border-radius: 10px; }
+    input[type="file"] { margin: 10px 0; }
+    button { background: #007bff; color: white; border: none; padding: 10px 15px; border-radius: 4px; cursor: pointer; margin: 5px; }
+    .reports { margin-top: 20px; }
+    .report-item { background: #f8f9fa; border: 1px solid #ddd; padding: 10px; margin: 5px 0; border-radius: 4px; }
+    #console { background: #000; color: #0f0; font-family: monospace; padding: 10px; height: 150px; overflow-y: scroll; margin-top: 20px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>🔧 CSV Manager Debug</h1>
+    
+    <div>
+      <label for="csvInput">Select CSV File:</label>
+      <input type="file" id="csvInput" accept=".csv">
+    </div>
+    
+    <div class="reports">
+      <h2>Reports (<span id="reportsCount">0</span>)</h2>
+      <div id="reportsList">
+        <div class="empty-state">No reports yet. Upload a CSV file to get started.</div>
+      </div>
+    </div>
+    
+    <button onclick="clearConsole()">Clear Console</button>
+    <button onclick="testFunction()">Test Filter Function</button>
+    
+    <div id="console"></div>
+  </div>
+
+  <script>
+    // Console logging
+    function log(message) {
+      const console = document.getElementById('console');
+      console.innerHTML += new Date().toLocaleTimeString() + ': ' + message + '\n';
+      console.scrollTop = console.scrollHeight;
+    }
+
+    function clearConsole() {
+      document.getElementById('console').innerHTML = '';
+    }
+
+    // CSV Filter Function
+    function filterCsvColumns(csvText) {
+      log('filterCsvColumns called');
+      const lines = csvText.trim().split('\n');
+      if (lines.length === 0) return '';
+      const header = lines[0].split(',');
+      log(`Header has ${header.length} columns`);
+      const selectedIndices = [0, 1, 2, 3, 4, 11];
+      const filteredHeader = selectedIndices.map(i => header[i]).join(',');
+      const filteredRows = lines.slice(1).map(line => {
+        const cols = line.split(',');
+        return selectedIndices.map(i => cols[i] || '').join(',');
+      });
+      return [filteredHeader, ...filteredRows].join('\n');
+    }
+
+    // State
+    let reports = [];
+
+    // DOM Elements
+    const csvInput = document.getElementById('csvInput');
+    const reportsList = document.getElementById('reportsList');
+    const reportsCount = document.getElementById('reportsCount');
+
+    // Check DOM elements
+    log('DOM elements loaded:');
+    log(`csvInput: ${csvInput ? 'OK' : 'NOT FOUND'}`);
+    log(`reportsList: ${reportsList ? 'OK' : 'NOT FOUND'}`);
+    log(`reportsCount: ${reportsCount ? 'OK' : 'NOT FOUND'}`);
+
+    function updateReportsCount() {
+      const count = reports.length;
+      if (reportsCount) {
+        reportsCount.textContent = count;
+      }
+    }
+
+    function renderReports() {
+      log(`Rendering ${reports.length} reports`);
+      reportsList.innerHTML = '';
+      
+      if (reports.length === 0) {
+        reportsList.innerHTML = '<div class="empty-state">No reports yet. Upload a CSV file to get started.</div>';
+        return;
+      }
+
+      reports.forEach((report, idx) => {
+        const div = document.createElement('div');
+        div.className = 'report-item';
+        div.innerHTML = `
+          <strong>${report.name}</strong><br>
+          <small>Size: ${report.size} bytes | Date: ${report.date.toLocaleString()}</small><br>
+          <button onclick="downloadReport(${idx})">Download</button>
+          <button onclick="viewReport(${idx})">View</button>
+          <button onclick="deleteReport(${idx})">Delete</button>
+        `;
+        reportsList.appendChild(div);
+      });
+    }
+
+    function downloadReport(idx) {
+      const report = reports[idx];
+      const blob = new Blob([report.filteredCsv], { type: 'text/csv' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${report.name}_filtered.csv`;
+      a.click();
+      URL.revokeObjectURL(url);
+      log(`Downloaded: ${report.name}_filtered.csv`);
+    }
+
+    function viewReport(idx) {
+      const report = reports[idx];
+      const win = window.open('', '_blank');
+      win.document.write(`<pre>${report.filteredCsv}</pre>`);
+    }
+
+    function deleteReport(idx) {
+      const name = reports[idx].name;
+      reports.splice(idx, 1);
+      renderReports();
+      updateReportsCount();
+      log(`Deleted report: ${name}`);
+    }
+
+    function testFunction() {
+      const testCsv = "Name,Age,City,Country,Job,Salary,Department,Years,Manager,Email,Phone,Total\nJohn,25,Madrid,Spain,Developer,50000,IT,3,Alice,john@test.com,123456,50000";
+      log('Testing filter function with sample data...');
+      const result = filterCsvColumns(testCsv);
+      log('Filter result:');
+      log(result);
+    }
+
+    // File input handler
+    csvInput.addEventListener('change', (e) => {
+      log('File input changed');
+      const file = e.target.files[0];
+      if (!file) {
+        log('No file selected');
+        return;
+      }
+
+      log(`File selected: ${file.name} (${file.size} bytes)`);
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        try {
+          log('File read successfully');
+          const csvText = evt.target.result;
+          log(`CSV content length: ${csvText.length}`);
+          
+          const filteredCsv = filterCsvColumns(csvText);
+          log(`Filtered CSV length: ${filteredCsv.length}`);
+          
+          const name = file.name.replace('.csv', '').replace(/[^a-zA-Z0-9_\-\s]/g, '_').toUpperCase();
+          
+          const report = {
+            name: name,
+            csv: csvText,
+            filteredCsv: filteredCsv,
+            date: new Date(),
+            size: file.size,
+            originalFileName: file.name
+          };
+          
+          reports.push(report);
+          log(`Report added: ${name}`);
+          
+          renderReports();
+          updateReportsCount();
+          
+          csvInput.value = '';
+          
+        } catch (error) {
+          log(`ERROR: ${error.message}`);
+        }
+      };
+      
+      reader.onerror = function() {
+        log('ERROR: File reading failed');
+      };
+      
+      reader.readAsText(file);
+    });
+
+    // Initial render
+    log('Script loaded and initialized');
+    renderReports();
+    updateReportsCount();
+  </script>
+</body>
+</html>
