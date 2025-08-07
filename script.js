@@ -224,10 +224,33 @@ function filterCsvColumns(csvText) {
 let reports = []; // {name, csv, filteredCsv, date, size}
 
 // --- DOM Elements ---
-const csvInput = document.getElementById('csvInput');
-const reportsList = document.getElementById('reportsList');
-const reportsCount = document.getElementById('reportsCount');
-const refreshBtn = document.querySelector('.refresh-btn');
+let csvInput;
+let reportsList;
+let reportsCount;
+let refreshBtn;
+
+// Initialize DOM elements when document is ready
+function initializeDOM() {
+  csvInput = document.getElementById('csvInput');
+  reportsList = document.getElementById('reportsList');
+  reportsCount = document.getElementById('reportsCount');
+  refreshBtn = document.querySelector('.refresh-btn');
+  
+  if (!csvInput) {
+    console.error('csvInput element not found!');
+    return false;
+  }
+  if (!reportsList) {
+    console.error('reportsList element not found!');
+    return false;
+  }
+  if (!reportsCount) {
+    console.error('reportsCount element not found!');
+    return false;
+  }
+  
+  return true;
+}
 
 // --- Utility Functions ---
 function formatFileSize(bytes) {
@@ -236,6 +259,42 @@ function formatFileSize(bytes) {
   const sizes = ['Bytes', 'KB', 'MB', 'GB'];
   const i = Math.floor(Math.log(bytes) / Math.log(k));
   return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+}
+
+function formatDate(date) {
+  return new Date(date).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+    hour: '2-digit',
+    minute: '2-digit'
+  });
+}
+
+function showNotification(message, type = 'info') {
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type}`;
+  
+  const icon = type === 'success' ? 'check-circle' : 
+               type === 'error' ? 'exclamation-circle' : 
+               'info-circle';
+  
+  notification.innerHTML = `
+    <i class="fas fa-${icon}"></i>
+    <span>${message}</span>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Auto remove after 3 seconds
+  setTimeout(() => {
+    notification.classList.add('fade-out');
+    setTimeout(() => {
+      if (notification.parentNode) {
+        document.body.removeChild(notification);
+      }
+    }, 300);
+  }, 3000);
 }
 
 function formatDate(date) {
@@ -269,80 +328,6 @@ function showNotification(message, type = 'info') {
       }
     }, 300);
   }, 3000);
-}
-
-// --- Event Handlers ---
-csvInput.addEventListener('change', (e) => {
-  const file = e.target.files[0];
-  if (!file) return;
-  
-  // Add loading state
-  csvInput.disabled = true;
-  const label = document.querySelector('.file-input-label');
-  const originalText = label.innerHTML;
-  label.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
-  
-  const reader = new FileReader();
-  reader.onload = function(evt) {
-    try {
-      const csvText = evt.target.result;
-      const filteredCsv = filterCsvColumns(csvText);
-      const name = file.name.replace('.csv', '').replace(/[^a-zA-Z0-9_\-\s]/g, '_').toUpperCase();
-      
-      // Create report object
-      const report = {
-        name: name,
-        csv: csvText,
-        filteredCsv: filteredCsv,
-        date: new Date(),
-        size: file.size,
-        originalFileName: file.name
-      };
-      
-      // Save to database first
-      saveReport(report).then(reportId => {
-        // Add ID to the report object
-        report.id = reportId;
-        
-        // Add to local reports array
-        reports.push(report);
-        renderReports();
-        updateReportsCount();
-        
-        showNotification(`Successfully processed and saved "${file.name}"`, 'success');
-      }).catch(err => {
-        console.error('Error saving report to database:', err);
-        showNotification('Error saving report to database', 'error');
-      });
-      
-      // Reset input
-      csvInput.value = '';
-      
-    } catch (error) {
-      console.error('Error processing CSV:', error);
-      showNotification('Error processing CSV file', 'error');
-    } finally {
-      // Remove loading state
-      csvInput.disabled = false;
-      label.innerHTML = originalText;
-    }
-  };
-  
-  reader.onerror = function() {
-    showNotification('Error reading file', 'error');
-    csvInput.disabled = false;
-    label.innerHTML = originalText;
-  };
-  
-  reader.readAsText(file);
-});
-
-// Refresh button
-if (refreshBtn) {
-  refreshBtn.addEventListener('click', () => {
-    renderReports();
-    showNotification('Reports refreshed', 'info');
-  });
 }
 
 // --- Render Functions ---
@@ -435,6 +420,35 @@ function renderReports() {
 }
 
 // --- Action Functions ---
+function editReport(idx) {
+  const currentReport = reports[idx];
+  const currentName = currentReport.name;
+  const newName = prompt('Edit report name:', currentName);
+  if (newName && newName.trim() !== '' && newName !== currentName) {
+    const updatedName = newName.trim().toUpperCase();
+    
+    // Update in database if it has an ID
+    if (currentReport.id) {
+      updateReport(currentReport.id, { name: updatedName }).then(() => {
+        // Update local array
+        reports[idx].name = updatedName;
+        renderReports();
+        updateReportsCount();
+        showNotification(`Report renamed to "${updatedName}"`, 'success');
+      }).catch(err => {
+        console.error('Error updating report in database:', err);
+        showNotification('Error updating report in database', 'error');
+      });
+    } else {
+      // Fallback for reports without ID (shouldn't happen with new system)
+      reports[idx].name = updatedName;
+      renderReports();
+      updateReportsCount();
+      showNotification(`Report renamed to "${updatedName}"`, 'success');
+    }
+  }
+}
+
 function deleteReport(idx) {
   const report = reports[idx];
   if (confirm(`Are you sure you want to delete "${report.name}"?`)) {
@@ -1018,99 +1032,191 @@ function openReport(idx) {
   `);
 }
 
-// --- Global action handlers ---
-const editBtn = document.querySelector('.edit-btn');
-if (editBtn) {
-  editBtn.addEventListener('click', () => {
-    if (reports.length === 0) {
-      showNotification('No reports to edit', 'info');
-      return;
-    }
+// --- Initial render ---
+// Initialize application when DOM and database are ready
+function initializeApplication() {
+  console.log('Initializing application...');
+  
+  // First initialize DOM
+  if (!initializeDOM()) {
+    console.error('Failed to initialize DOM elements');
+    return;
+  }
+  
+  // Then initialize database
+  initDB().then(() => {
+    console.log('Database initialized successfully');
     
-    // Show list of reports to edit
-    let reportsList = reports.map((report, idx) => `${idx + 1}. ${report.name}`).join('\n');
-    let selection = prompt(`Select a report to edit:\n\n${reportsList}\n\nEnter the number (1-${reports.length}):`);
-    
-    if (selection) {
-      let idx = parseInt(selection) - 1;
-      if (idx >= 0 && idx < reports.length) {
-        editReport(idx);
-      } else {
-        showNotification('Invalid selection', 'error');
-      }
-    }
+    // Load existing reports from database
+    loadReportsFromDB().then(() => {
+      console.log('Reports loaded from database');
+      renderReports();
+      updateReportsCount();
+      
+      // Set up event listeners after everything is loaded
+      setupEventListeners();
+      
+      console.log('Application initialization complete');
+    }).catch(err => {
+      console.error('Error loading reports from database:', err);
+      // Still set up event listeners even if loading fails
+      setupEventListeners();
+    });
+  }).catch(err => {
+    console.error('Error initializing database:', err);
+    // Set up basic functionality even if database fails
+    setupEventListeners();
   });
 }
 
-function editReport(idx) {
-  const currentReport = reports[idx];
-  const currentName = currentReport.name;
-  const newName = prompt('Edit report name:', currentName);
-  if (newName && newName.trim() !== '' && newName !== currentName) {
-    const updatedName = newName.trim().toUpperCase();
+// Set up all event listeners
+function setupEventListeners() {
+  if (!csvInput) {
+    console.error('Cannot set up event listeners: csvInput not found');
+    return;
+  }
+  
+  // CSV file input handler
+  csvInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
     
-    // Update in database if it has an ID
-    if (currentReport.id) {
-      updateReport(currentReport.id, { name: updatedName }).then(() => {
-        // Update local array
-        reports[idx].name = updatedName;
-        renderReports();
-        updateReportsCount();
-        showNotification(`Report renamed to "${updatedName}"`, 'success');
-      }).catch(err => {
-        console.error('Error updating report in database:', err);
-        showNotification('Error updating report in database', 'error');
-      });
-    } else {
-      // Fallback for reports without ID (shouldn't happen with new system)
-      reports[idx].name = updatedName;
+    // Add loading state
+    csvInput.disabled = true;
+    const label = document.querySelector('.file-input-label');
+    const originalText = label.innerHTML;
+    label.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Processing...';
+    
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      try {
+        const csvText = evt.target.result;
+        const filteredCsv = filterCsvColumns(csvText);
+        const name = file.name.replace('.csv', '').replace(/[^a-zA-Z0-9_\-\s]/g, '_').toUpperCase();
+        
+        // Create report object
+        const report = {
+          name: name,
+          csv: csvText,
+          filteredCsv: filteredCsv,
+          date: new Date(),
+          size: file.size,
+          originalFileName: file.name
+        };
+        
+        // Save to database first
+        saveReport(report).then(reportId => {
+          // Add ID to the report object
+          report.id = reportId;
+          
+          // Add to local reports array
+          reports.push(report);
+          renderReports();
+          updateReportsCount();
+          
+          showNotification(`Successfully processed and saved "${file.name}"`, 'success');
+        }).catch(err => {
+          console.error('Error saving report to database:', err);
+          showNotification('Error saving report to database', 'error');
+        });
+        
+        // Reset input
+        csvInput.value = '';
+        
+      } catch (error) {
+        console.error('Error processing CSV:', error);
+        showNotification('Error processing CSV file', 'error');
+      } finally {
+        // Remove loading state
+        csvInput.disabled = false;
+        label.innerHTML = originalText;
+      }
+    };
+    
+    reader.onerror = function() {
+      showNotification('Error reading file', 'error');
+      csvInput.disabled = false;
+      const label = document.querySelector('.file-input-label');
+      label.innerHTML = originalText;
+    };
+    
+    reader.readAsText(file);
+  });
+
+  // Refresh button
+  if (refreshBtn) {
+    refreshBtn.addEventListener('click', () => {
       renderReports();
-      updateReportsCount();
-      showNotification(`Report renamed to "${updatedName}"`, 'success');
-    }
+      showNotification('Reports refreshed', 'info');
+    });
+  }
+  
+  // Other buttons
+  const editBtn = document.querySelector('.edit-btn');
+  if (editBtn) {
+    editBtn.addEventListener('click', () => {
+      if (reports.length === 0) {
+        showNotification('No reports to edit', 'info');
+        return;
+      }
+      
+      // Show list of reports to edit
+      let reportsList = reports.map((report, idx) => `${idx + 1}. ${report.name}`).join('\n');
+      let selection = prompt(`Select a report to edit:\n\n${reportsList}\n\nEnter the number (1-${reports.length}):`);
+      
+      if (selection) {
+        let idx = parseInt(selection) - 1;
+        if (idx >= 0 && idx < reports.length) {
+          editReport(idx);
+        } else {
+          showNotification('Invalid selection', 'error');
+        }
+      }
+    });
+  }
+
+  const deleteBtn = document.querySelector('.delete-btn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', () => {
+      if (reports.length === 0) {
+        showNotification('No reports to delete', 'info');
+        return;
+      }
+      
+      if (confirm('Delete all reports from database? This action cannot be undone.')) {
+        const count = reports.length;
+        
+        // Delete all reports from database
+        const deletePromises = reports
+          .filter(report => report.id) // Only delete reports with IDs
+          .map(report => deleteReportFromDB(report.id));
+        
+        Promise.all(deletePromises).then(() => {
+          // Clear local array
+          reports = [];
+          renderReports();
+          updateReportsCount();
+          showNotification(`Deleted ${count} report${count !== 1 ? 's' : ''} from database`, 'success');
+        }).catch(err => {
+          console.error('Error deleting reports from database:', err);
+          showNotification('Error deleting some reports from database', 'error');
+          // Still clear local array even if some deletions failed
+          reports = [];
+          renderReports();
+          updateReportsCount();
+        });
+      }
+    });
   }
 }
 
-const deleteBtn = document.querySelector('.delete-btn');
-if (deleteBtn) {
-  deleteBtn.addEventListener('click', () => {
-    if (reports.length === 0) {
-      showNotification('No reports to delete', 'info');
-      return;
-    }
-    
-    if (confirm('Delete all reports from database? This action cannot be undone.')) {
-      const count = reports.length;
-      
-      // Delete all reports from database
-      const deletePromises = reports
-        .filter(report => report.id) // Only delete reports with IDs
-        .map(report => deleteReportFromDB(report.id));
-      
-      Promise.all(deletePromises).then(() => {
-        // Clear local array
-        reports = [];
-        renderReports();
-        updateReportsCount();
-        showNotification(`Deleted ${count} report${count !== 1 ? 's' : ''} from database`, 'success');
-      }).catch(err => {
-        console.error('Error deleting reports from database:', err);
-        showNotification('Error deleting some reports from database', 'error');
-        // Still clear local array even if some deletions failed
-        reports = [];
-        renderReports();
-        updateReportsCount();
-      });
-    }
-  });
+// Wait for DOM to be fully loaded before initializing
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', initializeApplication);
+} else {
+  // DOM is already loaded
+  initializeApplication();
 }
-
-// --- Initial render ---
-// Don't render immediately, wait for database to load
-// renderReports();
-// updateReportsCount();
-
-// The database initialization will call loadReportsFromDB() which handles the initial render
 
 // --- Add notification styles ---
 const notificationStyles = `
