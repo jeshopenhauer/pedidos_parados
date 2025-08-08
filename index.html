@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>CSV Report Manager</title>
+  <title>Gestor de Reportes CSV</title>
   <link rel="stylesheet" href="style.css" />
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
@@ -14,7 +14,7 @@
       <div class="header-content">
         <h1 class="header-title">
           <i class="fas fa-file-csv"></i>
-          Report Manager
+          Gestor de Reportes
         </h1>
       </div>
     </header>
@@ -26,24 +26,24 @@
           <div class="upload-icon">
             <i class="fas fa-cloud-upload-alt"></i>
           </div>
-          <h2 class="upload-title">Import CSV File</h2>
+          <h2 class="upload-title">Importar Archivo CSV</h2>
           
           <div class="file-input-wrapper">
             <input type="file" id="csvInput" accept=".csv" class="file-input" />
             <label for="csvInput" class="file-input-label">
               <i class="fas fa-plus"></i>
-              Choose File
+              Seleccionar Archivo
             </label>
           </div>
           
           <div class="upload-info">
             <div class="info-item">
               <i class="fas fa-info-circle"></i>
-              <span>Supported format: .csv files</span>
+              <span>Formato soportado: archivos .csv</span>
             </div>
             <div class="info-item">
               <i class="fas fa-filter"></i>
-              <span>Automatic filtering: 6 key columns selected</span>
+              <span>Filtrado automático: 6 columnas principales</span>
             </div>
           </div>
         </div>
@@ -56,19 +56,16 @@
             <div class="reports-title-group">
               <h2 class="reports-title">
                 <i class="fas fa-chart-line"></i>
-                My Reports
+                Mis Reportes
               </h2>
-              <span class="reports-count" id="reportsCount">0 reports</span>
+              <span class="reports-count" id="reportsCount">0 reportes</span>
             </div>
             <div class="reports-actions">
-              <button class="action-btn edit-btn" title="Edit Selected">
-                <i class="fas fa-edit"></i>
-              </button>
-              <button class="action-btn delete-btn" title="Delete Selected">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-              <button class="action-btn refresh-btn" title="Refresh">
+              <button class="action-btn refresh-btn" title="Actualizar">
                 <i class="fas fa-sync-alt"></i>
+              </button>
+              <button class="action-btn delete-btn" title="Eliminar Todos">
+                <i class="fas fa-trash-alt"></i>
               </button>
             </div>
           </div>
@@ -80,9 +77,51 @@
                 <div class="empty-state-icon">
                   <i class="fas fa-inbox"></i>
                 </div>
-                <h3 class="empty-state-title">No reports yet</h3>
-                <p class="empty-state-description">Upload a CSV file to get started</p>
+                <h3 class="empty-state-title">No hay reportes aún</h3>
+                <p class="empty-state-description">Sube un archivo CSV para comenzar</p>
               </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Panel para mostrar la tabla del reporte -->
+      <section class="table-section" id="tableSection" style="display: none;">
+        <div class="table-card">
+          <div class="table-header">
+            <div class="table-title-group">
+              <h2 class="table-title">
+                <i class="fas fa-table"></i>
+                <span id="tableReportName">Reporte CSV</span>
+              </h2>
+              <div class="table-meta">
+                <span class="meta-item">
+                  <i class="fas fa-calendar"></i>
+                  <span id="tableGeneratedDate"></span>
+                </span>
+                <span class="meta-item">
+                  <i class="fas fa-file"></i>
+                  <span id="tableFileName"></span>
+                </span>
+                <span class="meta-item">
+                  <i class="fas fa-database"></i>
+                  <span id="tableRecordCount"></span>
+                </span>
+              </div>
+            </div>
+            <div class="table-actions">
+              <button class="action-btn print-btn" onclick="printTable()" title="Imprimir">
+                <i class="fas fa-print"></i>
+              </button>
+              <button class="action-btn close-btn" onclick="closeTable()" title="Cerrar">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="table-content">
+            <div id="tableContainer" class="table-container">
+              <!-- La tabla se insertará aquí dinámicamente -->
             </div>
           </div>
         </div>
