@@ -26,23 +26,21 @@ const elements = {
 async function initDB() {
   return new Promise((resolve, reject) => {
     const request = indexedDB.open('CSVReportsDB', 2);
-    
     request.onerror = () => reject(request.error);
     request.onsuccess = () => {
       db = request.result;
+      window.db = db;
       resolve(db);
     };
-    
     request.onupgradeneeded = (event) => {
       db = event.target.result;
-      
+      window.db = db;
       // Reports store
       if (!db.objectStoreNames.contains('reports')) {
         const reportStore = db.createObjectStore('reports', { keyPath: 'id', autoIncrement: true });
         reportStore.createIndex('name', 'name', { unique: false });
         reportStore.createIndex('uploadDate', 'uploadDate', { unique: false });
       }
-      
       // Screenshots store
       if (!db.objectStoreNames.contains('screenshots')) {
         const screenshotStore = db.createObjectStore('screenshots', { keyPath: 'id', autoIncrement: true });
@@ -534,7 +532,6 @@ function openReport(idx) {
               }
               return `<th>${headerContent}</th>`;
             }).join('')}
-            <th style="text-align: center; width: 150px;">Gestionar Capturas</th>
           </tr>
         </thead>
         <tbody>
@@ -577,13 +574,6 @@ function openReport(idx) {
                   
                   return `<td${cellClass}>${cellContent}</td>`;
                 }).join('')}
-                <td style="text-align: center; padding: 8px;">
-                  <div class="screenshot-actions">
-                    <button class="action-btn view-screenshots-btn" data-requisition="${requisitionId}" title="Ver/Gestionar Capturas">
-                      <i class="fas fa-images"></i>
-                    </button>
-                  </div>
-                </td>
               </tr>
             `;
           }).join('')}
@@ -653,92 +643,75 @@ function setupModalCloseListener() {
 
 // Función para imprimir la tabla
 function printTable() {
-  const tableContent = document.getElementById('tableContainer').innerHTML;
-  const reportName = document.getElementById('tableReportName').textContent;
-  const generatedDate = document.getElementById('tableGeneratedDate').textContent;
-  const fileName = document.getElementById('tableFileName').textContent;
-  const recordCount = document.getElementById('tableRecordCount').textContent;
-  
-  const printWindow = window.open('', '_blank');
-  printWindow.document.write(`
-    <!DOCTYPE html>
-    <html lang="es">
-    <head>
-      <title>${reportName} - Reporte CSV</title>
-      <meta charset="UTF-8">
-      <style>
-        body { 
-          font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-          margin: 20px; 
-          color: #0f172a;
+  // Incluir jsPDF si no está presente
+  if (typeof window.jspdf === 'undefined') {
+    const script = document.createElement('script');
+    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
+    script.onload = generatePDF;
+    document.body.appendChild(script);
+  } else {
+    generatePDF();
+  }
+
+  function generatePDF() {
+    const { jsPDF } = window.jspdf || window.jspdf;
+    const doc = new jsPDF({ orientation: 'landscape' });
+    const reportName = document.getElementById('tableReportName').textContent;
+    const generatedDate = document.getElementById('tableGeneratedDate').textContent;
+    const fileName = document.getElementById('tableFileName').textContent;
+    const recordCount = document.getElementById('tableRecordCount').textContent;
+    doc.setFont('helvetica');
+    doc.setFontSize(18);
+    doc.text(reportName, 14, 18);
+    doc.setFontSize(12);
+    doc.text(`Fecha: ${generatedDate}`, 14, 28);
+    doc.text(`Archivo: ${fileName}`, 14, 36);
+    doc.text(`Registros: ${recordCount}`, 14, 44);
+
+    // Extraer la tabla
+    const table = document.querySelector('#tableContainer table');
+    if (table) {
+      let head = [];
+      let body = [];
+      for (let r = 0; r < table.rows.length; r++) {
+        let row = [];
+        for (let c = 0; c < table.rows[r].cells.length; c++) {
+          row.push(table.rows[r].cells[c].innerText);
         }
-        .header { 
-          text-align: center; 
-          margin-bottom: 30px; 
-          border-bottom: 2px solid #e2e8f0; 
-          padding-bottom: 20px;
-        }
-        .header h1 { 
-          color: #4983ff; 
-          margin-bottom: 10px; 
-        }
-        .meta { 
-          display: flex; 
-          justify-content: center; 
-          gap: 20px; 
-          font-size: 0.9rem; 
-          color: #64748b;
-        }
-        table { 
-          width: 100%; 
-          border-collapse: collapse; 
-          font-size: 0.8rem; 
-        }
-        th, td { 
-          border: 1px solid #e2e8f0; 
-          padding: 8px; 
-          text-align: left; 
-        }
-        th { 
-          background: #f1f5f9; 
-          font-weight: 600; 
-        }
-        .currency-cell { 
-          font-weight: 600; 
-          color: #10b981; 
-          text-align: right; 
-        }
-        .status-info-needed { 
-          background: rgba(245, 158, 11, 0.1); 
-          color: #f59e0b; 
-        }
-        .screenshot-actions { 
-          text-align: center; 
-          color: #64748b; 
-          font-style: italic; 
-        }
-        @media print {
-          body { margin: 0; }
-          .screenshot-actions { display: none; }
-        }
-      </style>
-    </head>
-    <body>
-      <div class="header">
-        <h1>${reportName}</h1>
-        <div class="meta">
-          <span>Generado: ${generatedDate}</span>
-          <span>Original: ${fileName}</span>
-          <span>${recordCount}</span>
-        </div>
-      </div>
-      ${tableContent}
-    </body>
-    </html>
-  `);
-  printWindow.document.close();
-  printWindow.focus();
-  printWindow.print();
+        if (r === 0) head.push(row);
+        else body.push(row);
+      }
+      // Incluir autoTable si no está presente
+      if (typeof doc.autoTable === 'undefined') {
+        const script = document.createElement('script');
+        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
+        script.onload = () => {
+          doc.autoTable({
+            head: head,
+            body: body,
+            startY: 54,
+            theme: 'grid',
+            styles: { fontSize: 10, cellPadding: 6 },
+            headStyles: { fillColor: [21, 101, 192] }
+          });
+          doc.save(`${reportName}_informe.pdf`);
+          showNotification('PDF generado y descargado', 'success');
+        };
+        document.body.appendChild(script);
+        return;
+      }
+      doc.autoTable({
+        head: head,
+        body: body,
+        startY: 54,
+        theme: 'grid',
+        styles: { fontSize: 10, cellPadding: 6 },
+        headStyles: { fillColor: [21, 101, 192] }
+      });
+    }
+    doc.save(`${reportName}_informe.pdf`);
+    showNotification('PDF generado y descargado', 'success');
+  }
 }
 
 // Función para configurar los event listeners de los botones de captura
