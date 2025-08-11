@@ -844,4 +844,32 @@ body {
   .table-container .csv-table {
     min-width: 800px;
   }
+
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 2000;
+    left: 0; top: 0;
+    width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.3);
+    justify-content: center;
+    align-items: center;
+}
+.modal-content {
+    background: white;
+    border-radius: 10px;
+    padding: 30px;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.18);
+    position: relative;
+}
+.close {
+    position: absolute;
+    top: 18px; right: 18px;
+    font-size: 2rem;
+    cursor: pointer;
+    color: #888;
+}
+
+
+
 }

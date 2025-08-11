@@ -41,12 +41,6 @@ async function initDB() {
         reportStore.createIndex('name', 'name', { unique: false });
         reportStore.createIndex('uploadDate', 'uploadDate', { unique: false });
       }
-      // Screenshots store
-      if (!db.objectStoreNames.contains('screenshots')) {
-        const screenshotStore = db.createObjectStore('screenshots', { keyPath: 'id', autoIncrement: true });
-        screenshotStore.createIndex('requisitionId', 'requisitionId', { unique: false });
-        screenshotStore.createIndex('timestamp', 'timestamp', { unique: false });
-      }
     };
   });
 }
@@ -112,56 +106,7 @@ async function updateReport(reportId, updatedData) {
   });
 }
 
-// === OPERACIONES DE CAPTURAS ===
-async function saveScreenshot(requisitionId, imageBlob, filename) {
-window.saveScreenshot = saveScreenshot;
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['screenshots'], 'readwrite');
-    const store = transaction.objectStore('screenshots');
-    
-    const reader = new FileReader();
-    reader.onload = function() {
-      const screenshot = {
-        requisitionId: requisitionId,
-        imageData: reader.result, // Base64 data URL
-        filename: filename || 'screenshot.png',
-        timestamp: new Date().toISOString(),
-        uploadDate: new Date().toLocaleString()
-      };
-      
-      const request = store.add(screenshot);
-      request.onsuccess = () => resolve(request.result);
-      request.onerror = () => reject(request.error);
-    };
-    reader.onerror = () => reject(new Error('Error reading image file'));
-    reader.readAsDataURL(imageBlob);
-  });
-}
 
-async function getScreenshots(requisitionId) {
-window.getScreenshots = getScreenshots;
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['screenshots'], 'readonly');
-    const store = transaction.objectStore('screenshots');
-    const index = store.index('requisitionId');
-    
-    const request = index.getAll(requisitionId);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function deleteScreenshot(screenshotId) {
-window.deleteScreenshot = deleteScreenshot;
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['screenshots'], 'readwrite');
-    const store = transaction.objectStore('screenshots');
-    
-    const request = store.delete(screenshotId);
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
-}
 
 // === PROCESAMIENTO DE CSV ===
 function parseCSVLine(line) {
@@ -288,31 +233,6 @@ function generateReportName(fileName) {
     .substring(0, 50); // Limitar longitud
 }
 
-// Función para crear carpeta y guardar captura (simulado en navegador)
-async function saveScreenshotToFolder(imageBlob, requisitionId, filename) {
-  try {
-    // Crear un enlace de descarga automática
-    const url = URL.createObjectURL(imageBlob);
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `figures/${requisitionId}_${filename}`;
-    
-    // Simular clic para descargar
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-    
-    // Limpiar URL
-    URL.revokeObjectURL(url);
-    
-    showNotification(`Captura guardada: ${link.download}`, 'success');
-    return true;
-  } catch (error) {
-    console.error('Error guardando captura:', error);
-    showNotification('Error guardando captura localmente', 'error');
-    return false;
-  }
-}
 
 // === INICIALIZACIÓN DOM ===
 function initializeDOM() {
@@ -388,7 +308,10 @@ function renderReports() {
   reports.forEach((report, idx) => {
     const entry = document.createElement('div');
     entry.className = 'report-entry';
-    entry.onclick = () => openReport(idx);
+    entry.onclick = () => {
+      openReport(idx);
+      showNotaModal(reports[idx], idx);
+    };
 
     entry.innerHTML = `
       <div class="report-info">
@@ -897,74 +820,7 @@ function getReportStyles() {
   `;
 }
 
-// === MÓDULO DE GESTIÓN DE IMÁGENES ===
-// Sistema simplificado para ver y cargar imágenes desde carpeta figures/
 
-// Módulo de gestión de imágenes (simple y funcional)
-window.viewScreenshots = async function(requisitionId) {
-  try {
-    const screenshots = await getScreenshots(requisitionId);
-    const modal = document.createElement('div');
-    modal.className = 'image-modal-overlay';
-    modal.innerHTML = `
-      <div class="image-modal-content">
-        <h2 style="margin:0 0 20px 0; color:#1565c0;">Capturas de ${requisitionId}</h2>
-        <div style="margin-bottom:20px;">
-          <input type="file" id="figuresFileInput" accept="image/*" multiple style="display:none;">
-          <button id="selectFromFigures" style="background:#0ea5e9;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:16px;">Añadir imagen</button>
-        </div>
-        <div id="imagesGrid">
-          ${screenshots.length > 0 ? screenshots.map(s => `
-            <div style='display:inline-block;margin:10px;text-align:center;'>
-              <img src='${s.imageData}' style='width:180px;height:120px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px #0002;cursor:pointer;' onclick='window.openImageFullscreen("${s.imageData}")'>
-              <div style='margin:5px 0;font-size:13px;color:#64748b;'>${s.uploadDate}</div>
-              <button onclick='window.deleteScreenshotFromView(${s.id},"${requisitionId}")' style='background:#ef4444;color:white;border:none;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:13px;'>Eliminar</button>
-            </div>
-          `).join('') : `<div style='padding:40px;text-align:center;color:#64748b;'>No hay capturas</div>`}
-        </div>
-        <div style="margin-top:30px;text-align:center;">
-          <button id="closeModal" style="background:#6b7280;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-size:16px;">Cerrar</button>
-        </div>
-      </div>
-    `;
-    document.body.appendChild(modal);
-    document.getElementById('selectFromFigures').onclick = () => document.getElementById('figuresFileInput').click();
-    document.getElementById('figuresFileInput').onchange = async function(e) {
-      const files = Array.from(e.target.files);
-      for (const file of files) {
-        if (file.type.startsWith('image/')) {
-          await saveScreenshot(requisitionId, file, file.name);
-        }
-      }
-      document.body.removeChild(modal);
-      window.viewScreenshots(requisitionId);
-    };
-    document.getElementById('closeModal').onclick = () => document.body.removeChild(modal);
-    modal.onclick = e => { if (e.target === modal) document.body.removeChild(modal); };
-  } catch (err) {
-    showNotification('Error mostrando capturas', 'error');
-  }
-};
-window.openImageFullscreen = function(imageSrc) {
-  const fullscreenModal = document.createElement('div');
-  fullscreenModal.className = 'fullscreen-modal';
-  fullscreenModal.innerHTML = `
-    <div style='display:flex;align-items:center;justify-content:center;height:100vh;'>
-      <img src='${imageSrc}' style='max-width:90vw;max-height:90vh;border-radius:10px;box-shadow:0 20px 50px #0008;'>
-      <button onclick='document.body.removeChild(this.parentElement.parentElement)' style='position:absolute;top:30px;right:30px;background:#333;color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:1.2rem;cursor:pointer;'>✖️</button>
-    </div>
-  `;
-  fullscreenModal.onclick = e => { if (e.target === fullscreenModal) document.body.removeChild(fullscreenModal); };
-  document.body.appendChild(fullscreenModal);
-};
-window.deleteScreenshotFromView = async function(screenshotId, requisitionId) {
-  if (confirm('¿Eliminar esta captura?')) {
-    await deleteScreenshot(screenshotId);
-    document.querySelector('.image-modal-overlay')?.remove();
-    window.viewScreenshots(requisitionId);
-    showNotification('Captura eliminada', 'success');
-  }
-};
 
 // === EVENTOS ===
 function setupEventListeners() {
@@ -1149,3 +1005,6 @@ window.deleteReport = deleteReport;
 window.openReport = openReport;
 // window.addScreenshot = addScreenshot; // Eliminada - funcionalidad integrada en viewScreenshots
 window.viewScreenshots = viewScreenshots;
+
+
+
