@@ -199,7 +199,11 @@ function filterCSVColumns(csvText) {
     const filteredRows = lines.slice(1)
       .map(line => {
         const cols = parseCSVLine(line);
-        return CONFIG.SELECTED_COLUMNS.map(i => cols[i] || '').join(',');
+        // Filtrar por Status 'More information needed'
+        if (cols[CONFIG.STATUS_COLUMN_INDEX] === 'More information needed') {
+          return CONFIG.SELECTED_COLUMNS.map(i => cols[i] || '').join(',');
+        }
+        return '';
       })
       .filter(row => row.trim() !== ',,,,,' && row.trim() !== ''); // Filtrar filas vacías
     
