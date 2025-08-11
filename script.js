@@ -116,6 +116,7 @@ async function updateReport(reportId, updatedData) {
 
 // === OPERACIONES DE CAPTURAS ===
 async function saveScreenshot(requisitionId, imageBlob, filename) {
+window.saveScreenshot = saveScreenshot;
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(['screenshots'], 'readwrite');
     const store = transaction.objectStore('screenshots');
@@ -140,6 +141,7 @@ async function saveScreenshot(requisitionId, imageBlob, filename) {
 }
 
 async function getScreenshots(requisitionId) {
+window.getScreenshots = getScreenshots;
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(['screenshots'], 'readonly');
     const store = transaction.objectStore('screenshots');
@@ -152,6 +154,7 @@ async function getScreenshots(requisitionId) {
 }
 
 async function deleteScreenshot(screenshotId) {
+window.deleteScreenshot = deleteScreenshot;
   return new Promise((resolve, reject) => {
     const transaction = db.transaction(['screenshots'], 'readwrite');
     const store = transaction.objectStore('screenshots');
@@ -746,7 +749,7 @@ function setupScreenshotButtons() {
       e.preventDefault();
       const requisitionId = this.getAttribute('data-requisition');
       if (requisitionId) {
-        viewScreenshots(requisitionId);
+        window.open(`screenshots.html?id=${encodeURIComponent(requisitionId)}`, '_blank');
       } else {
         showNotification('ID de requisición no encontrado', 'error');
       }
@@ -886,23 +889,9 @@ function getReportStyles() {
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     }
     
-    .screenshot-btn {
-      color: #059669;
-    }
+  
     
-    .screenshot-btn:hover {
-      background: #d1fae5;
-      border-color: #10b981;
-    }
-    
-    .view-screenshots-btn {
-      color: #2563eb;
-    }
-    
-    .view-screenshots-btn:hover {
-      background: #dbeafe;
-      border-color: #3b82f6;
-    }
+  
     
     @media (max-width: 768px) {
       .container {
@@ -934,699 +923,71 @@ function getReportStyles() {
 // === MÓDULO DE GESTIÓN DE IMÁGENES ===
 // Sistema simplificado para ver y cargar imágenes desde carpeta figures/
 
-class ImageManager {
-  constructor() {
-    this.currentModal = null;
-  }
-
-  // Función principal para mostrar el modal de gestión de imágenes
-  async viewScreenshots(requisitionId) {
-    console.log('📸 Abriendo gestión de imágenes para:', requisitionId);
-    
-    try {
-      // Obtener capturas existentes
-      const screenshots = await getScreenshots(requisitionId);
-      console.log(`📊 ${screenshots.length} imágenes encontradas`);
-      
-      // Crear y mostrar modal
-      this.createModal(requisitionId, screenshots);
-      
-    } catch (error) {
-      console.error('❌ Error cargando imágenes:', error);
-      showNotification('❌ Error al cargar las imágenes', 'error');
-    }
-  }
-
-  // Crear el modal principal
-  createModal(requisitionId, screenshots) {
-    // Limpiar modal anterior si existe
-    this.closeModal();
-
-    // Crear estructura del modal
-    this.currentModal = document.createElement('div');
-    this.currentModal.className = 'image-modal-overlay';
-    this.currentModal.innerHTML = this.getModalHTML(requisitionId, screenshots);
-    
-    // Añadir al DOM
-    document.body.appendChild(this.currentModal);
-    
-    // Configurar eventos
-    this.setupEventListeners(requisitionId);
-    
-    // Animación de entrada
-    setTimeout(() => this.currentModal.classList.add('active'), 10);
-  }
-
-  // Generar HTML del modal
-  getModalHTML(requisitionId, screenshots) {
-    const hasImages = screenshots.length > 0;
-    
-    return `
+// Módulo de gestión de imágenes (simple y funcional)
+window.viewScreenshots = async function(requisitionId) {
+  try {
+    const screenshots = await getScreenshots(requisitionId);
+    const modal = document.createElement('div');
+    modal.className = 'image-modal-overlay';
+    modal.innerHTML = `
       <div class="image-modal-content">
-        <!-- Header -->
-        <header class="image-modal-header">
-          <h2>🖼️ Gestión de Imágenes</h2>
-          <h3>Requisición: <span class="requisition-id">${requisitionId}</span></h3>
-          <p class="image-count">${hasImages ? `${screenshots.length} imagen${screenshots.length !== 1 ? 'es' : ''}` : 'Sin imágenes'}</p>
-        </header>
-
-        <!-- Área de carga -->
-        <section class="upload-section">
-          <div class="upload-area">
-            <div class="upload-icon">📁</div>
-            <h4>Subir desde carpeta figures/</h4>
-            <p>Selecciona imágenes guardadas en tu carpeta figures/</p>
-            <button class="upload-btn" id="selectFromFigures">
-              <i class="fas fa-folder-open"></i>
-              Seleccionar archivos
-            </button>
-            <input type="file" id="figuresFileInput" accept="image/*" multiple style="display: none;">
-          </div>
-          
-          <div class="upload-progress" id="uploadProgress" style="display: none;">
-            <div class="progress-content">
-              <div class="spinner">⏳</div>
-              <p>Procesando imágenes...</p>
+        <h2 style="margin:0 0 20px 0; color:#1565c0;">Capturas de ${requisitionId}</h2>
+        <div style="margin-bottom:20px;">
+          <input type="file" id="figuresFileInput" accept="image/*" multiple style="display:none;">
+          <button id="selectFromFigures" style="background:#0ea5e9;color:white;padding:10px 20px;border:none;border-radius:8px;cursor:pointer;font-size:16px;">Añadir imagen</button>
+        </div>
+        <div id="imagesGrid">
+          ${screenshots.length > 0 ? screenshots.map(s => `
+            <div style='display:inline-block;margin:10px;text-align:center;'>
+              <img src='${s.imageData}' style='width:180px;height:120px;object-fit:cover;border-radius:8px;box-shadow:0 2px 8px #0002;cursor:pointer;' onclick='window.openImageFullscreen("${s.imageData}")'>
+              <div style='margin:5px 0;font-size:13px;color:#64748b;'>${s.uploadDate}</div>
+              <button onclick='window.deleteScreenshotFromView(${s.id},"${requisitionId}")' style='background:#ef4444;color:white;border:none;padding:5px 12px;border-radius:6px;cursor:pointer;font-size:13px;'>Eliminar</button>
             </div>
-          </div>
-        </section>
-
-        <!-- Grid de imágenes -->
-        <section class="images-grid-section">
-          ${hasImages ? this.getImagesGridHTML(screenshots, requisitionId) : this.getEmptyStateHTML()}
-        </section>
-
-        <!-- Footer -->
-        <footer class="image-modal-footer">
-          <button class="close-btn" id="closeModal">
-            ✖️ Cerrar
-          </button>
-        </footer>
+          `).join('') : `<div style='padding:40px;text-align:center;color:#64748b;'>No hay capturas</div>`}
+        </div>
+        <div style="margin-top:30px;text-align:center;">
+          <button id="closeModal" style="background:#6b7280;color:white;padding:10px 24px;border:none;border-radius:8px;cursor:pointer;font-size:16px;">Cerrar</button>
+        </div>
       </div>
     `;
-  }
-
-  // HTML para el grid de imágenes
-  getImagesGridHTML(screenshots, requisitionId) {
-    return `
-      <div class="images-grid">
-        ${screenshots.map(screenshot => `
-          <div class="image-card" data-image-id="${screenshot.id}">
-            <div class="image-container">
-              <img src="${screenshot.imageData}" 
-                   alt="Captura ${screenshot.filename}" 
-                   class="image-thumbnail"
-                   onclick="imageManager.openFullscreen('${screenshot.imageData}')">
-              <div class="image-overlay">
-                <button class="fullscreen-btn" onclick="imageManager.openFullscreen('${screenshot.imageData}')" title="Ver en pantalla completa">
-                  🔍
-                </button>
-              </div>
-            </div>
-            <div class="image-info">
-              <div class="image-date">📅 ${screenshot.uploadDate}</div>
-              <button class="delete-btn" onclick="imageManager.deleteImage(${screenshot.id}, '${requisitionId}')" title="Eliminar imagen">
-                🗑️
-              </button>
-            </div>
-          </div>
-        `).join('')}
-      </div>
-    `;
-  }
-
-  // HTML para estado vacío
-  getEmptyStateHTML() {
-    return `
-      <div class="empty-state">
-        <div class="empty-icon">📷</div>
-        <h4>No hay imágenes</h4>
-        <p>Añade imágenes desde tu carpeta figures/</p>
-      </div>
-    `;
-  }
-
-  // Configurar event listeners
-  setupEventListeners(requisitionId) {
-    if (!this.currentModal) return;
-
-    // Botón de selección de archivos
-    const selectBtn = this.currentModal.querySelector('#selectFromFigures');
-    const fileInput = this.currentModal.querySelector('#figuresFileInput');
-    
-    if (selectBtn && fileInput) {
-      selectBtn.onclick = () => fileInput.click();
-      fileInput.onchange = (e) => this.handleFileSelection(e, requisitionId);
-    }
-
-    // Botón de cerrar
-    const closeBtn = this.currentModal.querySelector('#closeModal');
-    if (closeBtn) {
-      closeBtn.onclick = () => this.closeModal();
-    }
-
-    // Cerrar al hacer clic fuera del contenido
-    this.currentModal.onclick = (e) => {
-      if (e.target === this.currentModal) {
-        this.closeModal();
-      }
-    };
-
-    // Cerrar con tecla Escape
-    document.addEventListener('keydown', this.handleKeydown.bind(this));
-  }
-
-  // Manejar selección de archivos
-  async handleFileSelection(event, requisitionId) {
-    const files = Array.from(event.target.files);
-    if (files.length === 0) return;
-
-    const progressEl = this.currentModal.querySelector('#uploadProgress');
-    progressEl.style.display = 'block';
-
-    try {
-      let processedCount = 0;
-      
+    document.body.appendChild(modal);
+    document.getElementById('selectFromFigures').onclick = () => document.getElementById('figuresFileInput').click();
+    document.getElementById('figuresFileInput').onchange = async function(e) {
+      const files = Array.from(e.target.files);
       for (const file of files) {
         if (file.type.startsWith('image/')) {
-          const timestamp = new Date().getTime();
-          const filename = `${requisitionId}_${timestamp}_${file.name}`;
-          
-          await saveScreenshot(requisitionId, file, filename);
-          processedCount++;
-          
-          console.log(`✅ Procesado: ${filename}`);
+          await saveScreenshot(requisitionId, file, file.name);
         }
       }
-
-      if (processedCount > 0) {
-        showNotification(`✅ ${processedCount} imagen${processedCount !== 1 ? 'es' : ''} añadida${processedCount !== 1 ? 's' : ''}`, 'success');
-        
-        // Actualizar el grid de imágenes sin recargar todo el modal
-        this.updateImageGrid(requisitionId);
-      }
-
-    } catch (error) {
-      console.error('❌ Error procesando archivos:', error);
-      showNotification('❌ Error al procesar las imágenes', 'error');
-    } finally {
-      progressEl.style.display = 'none';
-    }
-  }
-
-  // Abrir imagen en pantalla completa
-  openFullscreen(imageSrc) {
-    const fullscreenModal = document.createElement('div');
-    fullscreenModal.className = 'fullscreen-modal';
-    fullscreenModal.innerHTML = `
-      <div class="fullscreen-content">
-        <img src="${imageSrc}" alt="Imagen en pantalla completa" class="fullscreen-image">
-        <button class="fullscreen-close" onclick="document.body.removeChild(this.parentElement.parentElement)">
-          ✖️
-        </button>
-      </div>
-    `;
-    
-    fullscreenModal.onclick = (e) => {
-      if (e.target === fullscreenModal) {
-        document.body.removeChild(fullscreenModal);
-      }
+      document.body.removeChild(modal);
+      window.viewScreenshots(requisitionId);
     };
-    
-    document.body.appendChild(fullscreenModal);
+    document.getElementById('closeModal').onclick = () => document.body.removeChild(modal);
+    modal.onclick = e => { if (e.target === modal) document.body.removeChild(modal); };
+  } catch (err) {
+    showNotification('Error mostrando capturas', 'error');
   }
-
-  // Eliminar imagen
-  async deleteImage(imageId, requisitionId) {
-    if (!confirm('¿Estás seguro de que quieres eliminar esta imagen?')) {
-      return;
-    }
-
-    try {
-      await deleteScreenshot(imageId);
-      showNotification('🗑️ Imagen eliminada correctamente', 'success');
-      
-      // Actualizar solo el grid de imágenes
-      this.updateImageGrid(requisitionId);
-      
-    } catch (error) {
-      console.error('❌ Error eliminando imagen:', error);
-      showNotification('❌ Error al eliminar la imagen', 'error');
-    }
-  }
-
-  // Actualizar solo el grid de imágenes sin recargar el modal completo
-  async updateImageGrid(requisitionId) {
-    try {
-      // Obtener imágenes actualizadas
-      const screenshots = await getScreenshots(requisitionId);
-      
-      // Actualizar contador
-      const imageCountEl = this.currentModal.querySelector('.image-count');
-      if (imageCountEl) {
-        const hasImages = screenshots.length > 0;
-        imageCountEl.textContent = hasImages ? `${screenshots.length} imagen${screenshots.length !== 1 ? 'es' : ''}` : 'Sin imágenes';
-      }
-      
-      // Actualizar grid
-      const gridSection = this.currentModal.querySelector('.images-grid-section');
-      if (gridSection) {
-        const hasImages = screenshots.length > 0;
-        gridSection.innerHTML = hasImages ? 
-          this.getImagesGridHTML(screenshots, requisitionId) : 
-          this.getEmptyStateHTML();
-      }
-      
-      console.log(`🔄 Grid actualizado: ${screenshots.length} imágenes`);
-      
-    } catch (error) {
-      console.error('❌ Error actualizando grid:', error);
-      showNotification('❌ Error actualizando la vista', 'error');
-    }
-  }
-
-  // Manejar teclas
-  handleKeydown(event) {
-    if (event.key === 'Escape' && this.currentModal) {
-      this.closeModal();
-    }
-  }
-
-  // Cerrar modal
-  closeModal() {
-    if (this.currentModal) {
-      this.currentModal.classList.add('closing');
-      setTimeout(() => {
-        if (this.currentModal && this.currentModal.parentNode) {
-          document.body.removeChild(this.currentModal);
-        }
-        this.currentModal = null;
-      }, 300);
-    }
-    
-    // Limpiar listener de teclado
-    document.removeEventListener('keydown', this.handleKeydown);
-  }
-}
-
-// Crear instancia global del gestor de imágenes
-const imageManager = new ImageManager();
-
-// Función global para compatibilidad
-window.viewScreenshots = function(requisitionId) {
-  imageManager.viewScreenshots(requisitionId);
 };
-
-// Añadir estilos CSS para el modal
-function addImageModalStyles() {
-  const styles = `
-    .image-modal-overlay {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.8);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 10000;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .image-modal-overlay.active {
-      opacity: 1;
-    }
-
-    .image-modal-overlay.closing {
-      opacity: 0;
-    }
-
-    .image-modal-content {
-      background: white;
-      border-radius: 16px;
-      max-width: 1000px;
-      width: 95vw;
-      max-height: 90vh;
-      overflow-y: auto;
-      box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
-      transform: translateY(20px);
-      transition: transform 0.3s ease;
-    }
-
-    .image-modal-overlay.active .image-modal-content {
-      transform: translateY(0);
-    }
-
-    .image-modal-header {
-      padding: 30px 30px 20px;
-      border-bottom: 2px solid #e2e8f0;
-      text-align: center;
-    }
-
-    .image-modal-header h2 {
-      margin: 0 0 10px;
-      color: #1565c0;
-      font-size: 1.8rem;
-      font-weight: 700;
-    }
-
-    .image-modal-header h3 {
-      margin: 0 0 10px;
-      color: #334155;
-      font-size: 1.2rem;
-      font-weight: 600;
-    }
-
-    .requisition-id {
-      color: #2563eb;
-      font-weight: 700;
-    }
-
-    .image-count {
-      margin: 0;
-      color: #64748b;
-      font-size: 1rem;
-    }
-
-    .upload-section {
-      padding: 30px;
-      border-bottom: 1px solid #e2e8f0;
-    }
-
-    .upload-area {
-      background: linear-gradient(135deg, #f0f9ff, #e0f2fe);
-      border: 2px dashed #0ea5e9;
-      border-radius: 12px;
-      padding: 30px;
-      text-align: center;
-      transition: all 0.3s ease;
-    }
-
-    .upload-area:hover {
-      background: linear-gradient(135deg, #e0f2fe, #bae6fd);
-      border-color: #0284c7;
-    }
-
-    .upload-icon {
-      font-size: 3rem;
-      margin-bottom: 15px;
-    }
-
-    .upload-area h4 {
-      margin: 0 0 10px;
-      color: #0369a1;
-      font-size: 1.3rem;
-      font-weight: 600;
-    }
-
-    .upload-area p {
-      margin: 0 0 20px;
-      color: #0369a1;
-      font-size: 0.95rem;
-    }
-
-    .upload-btn {
-      background: linear-gradient(135deg, #0ea5e9, #0284c7);
-      color: white;
-      border: none;
-      padding: 15px 30px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      display: inline-flex;
-      align-items: center;
-      gap: 10px;
-      transition: all 0.3s ease;
-    }
-
-    .upload-btn:hover {
-      background: linear-gradient(135deg, #0284c7, #0369a1);
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(14, 165, 233, 0.3);
-    }
-
-    .upload-progress {
-      margin-top: 20px;
-      padding: 20px;
-      background: #e0f2fe;
-      border-radius: 10px;
-      text-align: center;
-    }
-
-    .progress-content {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 15px;
-    }
-
-    .spinner {
-      font-size: 1.5rem;
-      animation: spin 2s linear infinite;
-    }
-
-    @keyframes spin {
-      from { transform: rotate(0deg); }
-      to { transform: rotate(360deg); }
-    }
-
-    .images-grid-section {
-      padding: 30px;
-      min-height: 200px;
-    }
-
-    .images-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-      gap: 20px;
-    }
-
-    .image-card {
-      background: white;
-      border: 2px solid #e5e7eb;
-      border-radius: 12px;
-      overflow: hidden;
-      transition: all 0.3s ease;
-    }
-
-    .image-card:hover {
-      transform: translateY(-5px);
-      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
-      border-color: #3b82f6;
-    }
-
-    .image-container {
-      position: relative;
-      overflow: hidden;
-    }
-
-    .image-thumbnail {
-      width: 100%;
-      height: 200px;
-      object-fit: cover;
-      cursor: pointer;
-      transition: transform 0.3s ease;
-    }
-
-    .image-thumbnail:hover {
-      transform: scale(1.05);
-    }
-
-    .image-overlay {
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      bottom: 0;
-      background: rgba(0, 0, 0, 0.6);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-    }
-
-    .image-card:hover .image-overlay {
-      opacity: 1;
-    }
-
-    .fullscreen-btn {
-      background: rgba(255, 255, 255, 0.9);
-      border: none;
-      border-radius: 50%;
-      width: 50px;
-      height: 50px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .fullscreen-btn:hover {
-      background: white;
-      transform: scale(1.1);
-    }
-
-    .image-info {
-      padding: 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-    }
-
-    .image-date {
-      font-size: 0.85rem;
-      color: #64748b;
-      font-weight: 500;
-    }
-
-    .delete-btn {
-      background: linear-gradient(135deg, #ef4444, #dc2626);
-      color: white;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 0.85rem;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .delete-btn:hover {
-      background: linear-gradient(135deg, #dc2626, #b91c1c);
-      transform: scale(1.05);
-    }
-
-    .empty-state {
-      text-align: center;
-      padding: 60px 30px;
-      color: #64748b;
-    }
-
-    .empty-icon {
-      font-size: 4rem;
-      margin-bottom: 20px;
-    }
-
-    .empty-state h4 {
-      margin: 0 0 10px;
-      font-size: 1.3rem;
-      color: #374151;
-    }
-
-    .empty-state p {
-      margin: 0;
-      font-size: 1rem;
-    }
-
-    .image-modal-footer {
-      padding: 20px 30px;
-      border-top: 1px solid #e2e8f0;
-      text-align: center;
-    }
-
-    .close-btn {
-      background: #6b7280;
-      color: white;
-      border: none;
-      padding: 12px 24px;
-      border-radius: 10px;
-      cursor: pointer;
-      font-size: 16px;
-      font-weight: 600;
-      transition: all 0.3s ease;
-    }
-
-    .close-btn:hover {
-      background: #4b5563;
-      transform: translateY(-1px);
-    }
-
-    .fullscreen-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0, 0, 0, 0.95);
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      z-index: 20000;
-      cursor: pointer;
-    }
-
-    .fullscreen-content {
-      position: relative;
-      max-width: 95%;
-      max-height: 95%;
-    }
-
-    .fullscreen-image {
-      max-width: 100%;
-      max-height: 100%;
-      border-radius: 10px;
-      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
-    }
-
-    .fullscreen-close {
-      position: absolute;
-      top: -50px;
-      right: -10px;
-      background: rgba(0, 0, 0, 0.7);
-      color: white;
-      border: none;
-      border-radius: 50%;
-      width: 40px;
-      height: 40px;
-      font-size: 1.2rem;
-      cursor: pointer;
-      transition: all 0.3s ease;
-    }
-
-    .fullscreen-close:hover {
-      background: rgba(0, 0, 0, 0.9);
-      transform: scale(1.1);
-    }
-
-    @media (max-width: 768px) {
-      .image-modal-content {
-        width: 98vw;
-        max-height: 95vh;
-      }
-
-      .image-modal-header,
-      .upload-section,
-      .images-grid-section,
-      .image-modal-footer {
-        padding: 20px;
-      }
-
-      .images-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-      }
-
-      .upload-area {
-        padding: 20px;
-      }
-
-      .fullscreen-close {
-        top: 10px;
-        right: 10px;
-      }
-    }
+window.openImageFullscreen = function(imageSrc) {
+  const fullscreenModal = document.createElement('div');
+  fullscreenModal.className = 'fullscreen-modal';
+  fullscreenModal.innerHTML = `
+    <div style='display:flex;align-items:center;justify-content:center;height:100vh;'>
+      <img src='${imageSrc}' style='max-width:90vw;max-height:90vh;border-radius:10px;box-shadow:0 20px 50px #0008;'>
+      <button onclick='document.body.removeChild(this.parentElement.parentElement)' style='position:absolute;top:30px;right:30px;background:#333;color:white;border:none;border-radius:50%;width:40px;height:40px;font-size:1.2rem;cursor:pointer;'>✖️</button>
+    </div>
   `;
-
-  const styleSheet = document.createElement('style');
-  styleSheet.textContent = styles;
-  document.head.appendChild(styleSheet);
-}
-
-// Inicializar estilos cuando se carga el script
-addImageModalStyles();
+  fullscreenModal.onclick = e => { if (e.target === fullscreenModal) document.body.removeChild(fullscreenModal); };
+  document.body.appendChild(fullscreenModal);
+};
+window.deleteScreenshotFromView = async function(screenshotId, requisitionId) {
+  if (confirm('¿Eliminar esta captura?')) {
+    await deleteScreenshot(screenshotId);
+    document.querySelector('.image-modal-overlay')?.remove();
+    window.viewScreenshots(requisitionId);
+    showNotification('Captura eliminada', 'success');
+  }
+};
 
 // === EVENTOS ===
 function setupEventListeners() {
@@ -1640,11 +1001,11 @@ function setupEventListeners() {
     const file = e.target.files[0];
     if (!file) return;
     
-    // Estado de carga
+/*     // Estado de carga
     elements.csvInput.disabled = true;
     const label = document.querySelector('.file-input-label');
     const originalText = label.innerHTML;
-    label.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...';
+    label.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...'; */
     
     try {
       await processCSVFile(file);
@@ -1788,11 +1149,21 @@ function addNotificationStyles() {
 if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', () => {
     addNotificationStyles();
-    initializeApplication();
+    // Solo inicializar la app si NO estamos en screenshots.html
+    if (!window.location.pathname.endsWith('screenshots.html')) {
+      initializeApplication();
+    } else {
+      // Solo inicializar la base de datos para capturas
+      initDB();
+    }
   });
 } else {
   addNotificationStyles();
-  initializeApplication();
+  if (!window.location.pathname.endsWith('screenshots.html')) {
+    initializeApplication();
+  } else {
+    initDB();
+  }
 }
 
 // Exponer funciones globales para uso en HTML
