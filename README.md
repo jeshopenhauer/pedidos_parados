@@ -1,4 +1,4 @@
- https://github.com/jeshopenhauer/pedidos_parados
+https://jeshopenhauer.github.io/pedidos_parados/
 
 
 # Gestor de Pedidos Parados
