@@ -224,7 +224,8 @@
           date: new Date().toISOString(),
           filename: `test-report-${Date.now()}.csv`,
           headers: JSON.stringify(['Col1', 'Col2', 'Col3']),
-          data: JSON.stringify([['Test1', 'Test2', 'Test3'], ['Data1', 'Data2', 'Data3']])
+          data: JSON.stringify([['Test1', 'Test2', 'Test3'], ['Data1', 'Data2', 'Data3']]),
+          recordcount: 2
         };
 
         const { data, error } = await supabaseClient
@@ -289,7 +290,8 @@
           date: new Date().toISOString(),
           filename: `workflow-test-${Date.now()}.csv`,
           headers: JSON.stringify(['Requisition #', 'Status', 'Net total']),
-          data: JSON.stringify([['REQ001', 'More information needed', '1000'], ['REQ002', 'To be approved', '2000']])
+          data: JSON.stringify([['REQ001', 'More information needed', '1000'], ['REQ002', 'To be approved', '2000']]),
+          recordcount: 2
         };
         
         const { data: insertData, error: insertError } = await supabaseClient

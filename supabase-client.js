@@ -26,7 +26,8 @@ class SupabaseReportManager {
           date: report.date || new Date().toISOString(),
           filename: report.fileName || report.name,
           headers: JSON.stringify(report.headers),
-          data: JSON.stringify(report.data)
+          data: JSON.stringify(report.data),
+          recordcount: report.recordCount || (Array.isArray(report.data) ? report.data.length : 0)
         }]);
       
       if (error) throw error;
@@ -60,8 +61,9 @@ class SupabaseReportManager {
         ...report,
         headers: typeof report.headers === 'string' ? JSON.parse(report.headers) : report.headers,
         data: typeof report.data === 'string' ? JSON.parse(report.data) : report.data,
-        recordCount: Array.isArray(report.data) ? report.data.length : 
-                    (typeof report.data === 'string' ? JSON.parse(report.data).length : 0),
+        recordCount: report.recordcount || 
+                    (Array.isArray(report.data) ? report.data.length : 
+                    (typeof report.data === 'string' ? JSON.parse(report.data).length : 0)),
         fileName: report.filename
       }));
       
