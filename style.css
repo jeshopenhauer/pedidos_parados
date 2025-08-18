@@ -167,39 +167,55 @@ body {
 .import-controls {
   display: flex;
   align-items: center;
+  gap: 12px;
 }
 
 .file-input-hidden {
   display: none;
 }
 
-.import-btn {
+.import-btn, .monitor-btn {
   display: flex;
   align-items: center;
   gap: 8px;
   padding: 10px 16px;
-  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
-  color: white;
   border: none;
-  border-radius: 25px;
+  border-radius: 6px;
   font-size: 0.9rem;
   font-weight: 500;
   cursor: pointer;
   transition: var(--transition);
-  box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+}
+
+.import-btn {
+  background: var(--gray-dark);
+  color: white;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .import-btn:hover {
-  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4);
+  background: var(--dark-color);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.15);
 }
 
-.import-btn:active {
+.monitor-btn {
+  background: var(--primary-color);
+  color: white;
+  box-shadow: 0 2px 4px rgba(67, 97, 238, 0.2);
+}
+
+.monitor-btn:hover {
+  background: var(--primary-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 3px 6px rgba(67, 97, 238, 0.3);
+}
+
+.import-btn:active, .monitor-btn:active {
   transform: translateY(0);
 }
 
-.import-btn i {
+.import-btn i, .monitor-btn i {
   font-size: 1rem;
 }
 
@@ -1113,25 +1129,66 @@ td:nth-child(3) {
   transform: translateY(-2px);
 }
 
-/* === MONITOREO DE USUARIOS === */
+/* === MODAL DE MONITOREO DE USUARIOS === */
+.monitoring-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modal-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(5px);
+}
+
+.modal-content {
+  position: relative;
+  width: 90%;
+  max-width: 1200px;
+  max-height: 85vh;
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+  overflow: hidden;
+  animation: slideUp 0.3s ease-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { 
+    opacity: 0; 
+    transform: translateY(50px) scale(0.95); 
+  }
+  to { 
+    opacity: 1; 
+    transform: translateY(0) scale(1); 
+  }
+}
+
 .dashboard-section {
   margin-top: 0;
 }
 
-.dashboard-grid {
-  display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 30px;
-  align-items: start;
-}
-
 .reports-panel {
-  min-width: 0; /* Permite que el contenido se encoja */
-}
-
-.monitoring-panel {
-  min-width: 300px;
-  max-width: 500px;
+  width: 100%;
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .user-monitoring-section {
@@ -1196,11 +1253,13 @@ td:nth-child(3) {
 
 .monitoring-content {
   padding: 20px;
+  max-height: 60vh;
+  overflow-y: auto;
 }
 
 .users-grid {
   display: grid;
-  grid-template-columns: 1fr;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
   gap: 15px;
 }
 
@@ -1326,24 +1385,30 @@ td:nth-child(3) {
 
 /* Responsive para la grid de usuarios */
 @media (max-width: 1200px) {
-  .dashboard-grid {
-    grid-template-columns: 1fr;
-    gap: 20px;
-  }
-  
-  .monitoring-panel {
-    max-width: none;
-  }
-  
   .users-grid {
-    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  }
+  
+  .modal-content {
+    width: 95%;
+    max-height: 90vh;
   }
 }
 
 @media (max-width: 768px) {
   .users-grid {
     grid-template-columns: 1fr;
+  }
+  
+  .modal-content {
+    width: 98%;
+    max-height: 95vh;
+    margin: 10px;
+  }
+  
+  .monitoring-content {
+    padding: 15px;
+    max-height: 70vh;
   }
   
   .user-header {
@@ -1356,6 +1421,7 @@ td:nth-child(3) {
     flex-direction: column;
     gap: 15px;
     text-align: center;
+    padding: 15px;
   }
   
   .header-content {
@@ -1369,8 +1435,17 @@ td:nth-child(3) {
     gap: 15px;
   }
   
-  .import-btn span {
+  .import-controls {
+    flex-direction: row;
+    gap: 8px;
+  }
+  
+  .import-btn span, .monitor-btn span {
     display: none;
+  }
+  
+  .import-btn, .monitor-btn {
+    padding: 10px 12px;
   }
 }
 

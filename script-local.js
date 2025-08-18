@@ -49,13 +49,23 @@ document.addEventListener('DOMContentLoaded', function() {
   // Polling para actualizar reportes cada 5 segundos
   setInterval(loadReportsFromServer, 5000);
   
-  // Polling para actualizar estadísticas de usuarios cada 10 segundos (solo si está expandido)
+  // Polling para actualizar estadísticas de usuarios cada 10 segundos (solo si modal está abierto)
   setInterval(() => {
-    const content = document.getElementById('monitoringContent');
-    if (content && content.style.display !== 'none' && isAdmin) {
+    const modal = document.getElementById('monitoringModal');
+    if (modal && modal.style.display !== 'none' && isAdmin) {
       loadUserStats();
     }
   }, 10000);
+  
+  // Cerrar modal con tecla Escape
+  document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+      const modal = document.getElementById('monitoringModal');
+      if (modal && modal.style.display !== 'none') {
+        closeUserMonitoring();
+      }
+    }
+  });
   
   // Función para detectar si es administrador o usuario de solo visualización
   function detectUserRole() {
@@ -71,7 +81,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Usuario administrador autenticado
       isAdmin = true;
       roleStatus.className = 'status-dot admin';
-      roleText.textContent = 'Administrador';
+      roleText.textContent = 'Admin';
       roleText.className = 'role-text admin';
       
       if (uploadSection) uploadSection.style.display = 'block';
@@ -87,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function() {
       // Usuario de solo visualización (modo por defecto)
       isAdmin = false;
       roleStatus.className = 'status-dot viewer';
-      roleText.textContent = 'Solo Visualización';
+      roleText.textContent = '';
       roleText.className = 'role-text viewer';
       
       if (uploadSection) uploadSection.style.display = 'none';
@@ -557,24 +567,28 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Función para alternar la visibilidad del panel de monitoreo
   function toggleUserMonitoring() {
-    const content = document.getElementById('monitoringContent');
-    const icon = document.getElementById('monitoringCollapseIcon');
-    
-    if (!content || !icon) return;
-    
-    const isVisible = content.style.display !== 'none';
-    
-    if (isVisible) {
-      // Colapsar
-      content.style.display = 'none';
-      icon.className = 'fas fa-chevron-down collapse-icon';
-    } else {
-      // Expandir
-      content.style.display = 'block';
-      icon.className = 'fas fa-chevron-up collapse-icon';
-      // Cargar datos si no están cargados
-      loadUserStats();
+    if (!isAdmin) {
+      alert('No tienes permisos para ver el monitoreo de usuarios. Activa el modo administrador primero.');
+      return;
     }
+    
+    const modal = document.getElementById('monitoringModal');
+    if (!modal) return;
+    
+    modal.style.display = 'flex';
+    document.body.style.overflow = 'hidden'; // Prevenir scroll
+    
+    // Cargar datos al abrir
+    loadUserStats();
+  }
+  
+  // Función para cerrar el modal de monitoreo
+  function closeUserMonitoring() {
+    const modal = document.getElementById('monitoringModal');
+    if (!modal) return;
+    
+    modal.style.display = 'none';
+    document.body.style.overflow = 'auto'; // Restaurar scroll
   }
   
   async function clearUserLogs() {
@@ -666,5 +680,6 @@ document.addEventListener('DOMContentLoaded', function() {
   window.loadReportsFromServer = loadReportsFromServer;
   window.requestAdminAccess = requestAdminAccess;
   window.toggleUserMonitoring = toggleUserMonitoring;
+  window.closeUserMonitoring = closeUserMonitoring;
   window.triggerFileInput = triggerFileInput;
 });

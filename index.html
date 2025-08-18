@@ -30,89 +30,93 @@
               <i class="fas fa-file-csv"></i>
               <span>Importar CSV</span>
             </button>
+            <button class="monitor-btn" onclick="toggleUserMonitoring()" title="Monitoreo de Usuarios">
+              <i class="fas fa-users"></i>
+              <span>Monitoreo</span>
+            </button>
           </div>
         </div>
       </div>
     </header>
 
     <main class="main-content">
-      <!-- Contenedor para reportes y monitoreo lado a lado -->
+      <!-- Contenedor para reportes -->
       <section class="dashboard-section">
-        <div class="dashboard-grid">
-          <!-- Panel para gestionar reportes -->
-          <div class="reports-panel">
-            <div class="reports-card">
-              <div class="reports-header">
-                <div class="reports-title-group">
-                  <h2 class="reports-title">
-                    <i class="fas fa-chart-line"></i>
-                    Mis Reportes
-                  </h2>
-                  <span class="reports-count" id="reportsCount">0 reportes</span>
-                </div>
-                <div class="reports-actions">
-                  <button class="action-btn refresh-btn" title="Actualizar">
-                    <i class="fas fa-sync-alt"></i>
-                  </button>
-                  <button class="action-btn delete-btn admin-only" title="Eliminar Todos">
-                    <i class="fas fa-trash-alt"></i>
-                  </button>
-                </div>
+        <div class="reports-panel">
+          <div class="reports-card">
+            <div class="reports-header">
+              <div class="reports-title-group">
+                <h2 class="reports-title">
+                  <i class="fas fa-chart-line"></i>
+                  Mis Reportes
+                </h2>
+                <span class="reports-count" id="reportsCount">0 reportes</span>
               </div>
-              
-              <div class="reports-content">
-                <div id="reportsList" class="reports-list">
-                  <!-- Las entradas de reportes serán generadas dinámicamente -->
-                  <div class="empty-state">
-                    <div class="empty-state-icon">
-                      <i class="fas fa-inbox"></i>
-                    </div>
-                    <h3 class="empty-state-title">No hay reportes aún</h3>
-                    <p class="empty-state-description">Sube un archivo CSV para comenzar</p>
-                  </div>
-                </div>
+              <div class="reports-actions">
+                <button class="action-btn refresh-btn" title="Actualizar">
+                  <i class="fas fa-sync-alt"></i>
+                </button>
+                <button class="action-btn delete-btn admin-only" title="Eliminar Todos">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
               </div>
             </div>
-          </div>
-
-          <!-- Panel de monitoreo de usuarios (solo admin) -->
-          <div class="monitoring-panel admin-only" id="userMonitoringSection">
-            <div class="monitoring-card">
-              <div class="monitoring-header" onclick="toggleUserMonitoring()" style="cursor: pointer;">
-                <div class="monitoring-title-group">
-                  <h2 class="monitoring-title">
-                    <i class="fas fa-users"></i>
-                    Monitoreo de Usuarios
-                    <i class="fas fa-chevron-down collapse-icon" id="monitoringCollapseIcon"></i>
-                  </h2>
-                  <span class="users-count" id="usersCount">0 usuarios</span>
-                </div>
-                <div class="monitoring-actions" onclick="event.stopPropagation()">
-                  <button class="action-btn refresh-users-btn" title="Actualizar Usuarios">
-                    <i class="fas fa-sync-alt"></i>
-                  </button>
-                  <button class="action-btn clear-logs-btn" title="Limpiar Logs">
-                    <i class="fas fa-trash"></i>
-                  </button>
-                </div>
-              </div>
-              
-              <div class="monitoring-content" id="monitoringContent" style="display: none;">
-                <div id="usersList" class="users-list">
-                  <!-- Las entradas de usuarios serán generadas dinámicamente -->
-                  <div class="empty-state">
-                    <div class="empty-state-icon">
-                      <i class="fas fa-user-clock"></i>
-                    </div>
-                    <h3 class="empty-state-title">No hay datos de usuarios aún</h3>
-                    <p class="empty-state-description">Los usuarios aparecerán conforme accedan al sistema</p>
+            
+            <div class="reports-content">
+              <div id="reportsList" class="reports-list">
+                <!-- Las entradas de reportes serán generadas dinámicamente -->
+                <div class="empty-state">
+                  <div class="empty-state-icon">
+                    <i class="fas fa-inbox"></i>
                   </div>
+                  <h3 class="empty-state-title">No hay reportes aún</h3>
+                  <p class="empty-state-description">Sube un archivo CSV para comenzar</p>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
+      <!-- Modal de monitoreo de usuarios -->
+      <div class="monitoring-modal" id="monitoringModal" style="display: none;">
+        <div class="modal-overlay" onclick="closeUserMonitoring()"></div>
+        <div class="modal-content">
+          <div class="monitoring-header">
+            <div class="monitoring-title-group">
+              <h2 class="monitoring-title">
+                <i class="fas fa-users"></i>
+                Monitoreo de Usuarios
+              </h2>
+              <span class="users-count" id="usersCount">0 usuarios</span>
+            </div>
+            <div class="monitoring-actions">
+              <button class="action-btn refresh-users-btn" title="Actualizar Usuarios">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <button class="action-btn clear-logs-btn" title="Limpiar Logs">
+                <i class="fas fa-trash"></i>
+              </button>
+              <button class="action-btn close-modal-btn" title="Cerrar" onclick="closeUserMonitoring()">
+                <i class="fas fa-times"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="monitoring-content">
+            <div id="usersList" class="users-list">
+              <!-- Las entradas de usuarios serán generadas dinámicamente -->
+              <div class="empty-state">
+                <div class="empty-state-icon">
+                  <i class="fas fa-user-clock"></i>
+                </div>
+                <h3 class="empty-state-title">No hay datos de usuarios aún</h3>
+                <p class="empty-state-description">Los usuarios aparecerán conforme accedan al sistema</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <!-- Panel para mostrar la tabla del reporte -->
       <section class="table-section" id="tableSection" style="display: none;">
