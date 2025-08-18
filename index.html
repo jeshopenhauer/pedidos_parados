@@ -90,6 +90,42 @@
         </div>
       </section>
 
+      <!-- Panel de monitoreo de usuarios (solo admin) -->
+      <section class="user-monitoring-section admin-only" id="userMonitoringSection">
+        <div class="monitoring-card">
+          <div class="monitoring-header">
+            <div class="monitoring-title-group">
+              <h2 class="monitoring-title">
+                <i class="fas fa-users"></i>
+                Monitoreo de Usuarios
+              </h2>
+              <span class="users-count" id="usersCount">0 usuarios</span>
+            </div>
+            <div class="monitoring-actions">
+              <button class="action-btn refresh-users-btn" title="Actualizar Usuarios">
+                <i class="fas fa-sync-alt"></i>
+              </button>
+              <button class="action-btn clear-logs-btn" title="Limpiar Logs">
+                <i class="fas fa-trash"></i>
+              </button>
+            </div>
+          </div>
+          
+          <div class="monitoring-content">
+            <div id="usersList" class="users-list">
+              <!-- Las entradas de usuarios serán generadas dinámicamente -->
+              <div class="empty-state">
+                <div class="empty-state-icon">
+                  <i class="fas fa-user-clock"></i>
+                </div>
+                <h3 class="empty-state-title">No hay datos de usuarios aún</h3>
+                <p class="empty-state-description">Los usuarios aparecerán conforme accedan al sistema</p>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       <!-- Panel para mostrar la tabla del reporte -->
       <section class="table-section" id="tableSection" style="display: none;">
         <div class="table-card">

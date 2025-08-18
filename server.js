@@ -367,6 +367,19 @@ app.delete('/api/reports', (req, res) => {
   }
 });
 
+// Limpiar logs de usuarios
+app.delete('/api/clear-user-logs', (req, res) => {
+  try {
+    // Escribir array vacío al archivo de logs
+    fs.writeFileSync(userLogsFile, JSON.stringify([], null, 2));
+    
+    res.json({ success: true });
+  } catch (error) {
+    console.error('Error limpiando logs de usuarios:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
 // Ruta para servir la aplicación principal
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'index.html'));

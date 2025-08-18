@@ -9,6 +9,8 @@ document.addEventListener('DOMContentLoaded', function() {
   const tableFileName = document.getElementById('tableFileName');
   const tableRecordCount = document.getElementById('tableRecordCount');
   const tableContainer = document.getElementById('tableContainer');
+  const usersList = document.getElementById('usersList');
+  const usersCount = document.getElementById('usersCount');
   
   // Estado de la aplicación
   let reports = [];
@@ -28,11 +30,27 @@ document.addEventListener('DOMContentLoaded', function() {
     deleteBtn.addEventListener('click', deleteAllReports);
   }
   
+  const refreshUsersBtn = document.querySelector('.refresh-users-btn');
+  if (refreshUsersBtn) {
+    refreshUsersBtn.addEventListener('click', loadUserStats);
+  }
+  
+  const clearLogsBtn = document.querySelector('.clear-logs-btn');
+  if (clearLogsBtn) {
+    clearLogsBtn.addEventListener('click', clearUserLogs);
+  }
+  
   // Cargar reportes desde el servidor
   loadReportsFromServer();
   
+  // Cargar estadísticas de usuarios
+  loadUserStats();
+  
   // Polling para actualizar reportes cada 5 segundos
   setInterval(loadReportsFromServer, 5000);
+  
+  // Polling para actualizar estadísticas de usuarios cada 10 segundos
+  setInterval(loadUserStats, 10000);
   
   // Función para detectar si es administrador o usuario de solo visualización
   function detectUserRole() {
@@ -378,6 +396,172 @@ document.addEventListener('DOMContentLoaded', function() {
         console.error('Error deleting all reports:', error);
         showError('No se pudieron eliminar los reportes: ' + error.message);
       }
+    }
+  }
+  
+  // Funciones para estadísticas de usuarios
+  async function loadUserStats() {
+    if (!isAdmin) return; // Solo cargar si es admin
+    
+    try {
+      const response = await fetch('/api/user-stats');
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      const stats = await response.json();
+      displayUserStats(stats);
+      
+    } catch (error) {
+      console.error('Error cargando estadísticas de usuarios:', error);
+      if (usersList) {
+        usersList.innerHTML = `
+          <div class="error-state">
+            <div class="error-state-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="error-state-title">Error al cargar usuarios</h3>
+            <p class="error-state-description">${error.message}</p>
+          </div>
+        `;
+      }
+    }
+  }
+  
+  function displayUserStats(stats) {
+    if (!usersList || !isAdmin) return;
+    
+    const users = stats.users || [];
+    const totalRequests = stats.totalRequests || 0;
+    
+    // Actualizar contador
+    if (usersCount) {
+      usersCount.textContent = `${users.length} usuarios • ${totalRequests} peticiones`;
+    }
+    
+    if (users.length === 0) {
+      usersList.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-user-clock"></i>
+          </div>
+          <h3 class="empty-state-title">No hay datos de usuarios aún</h3>
+          <p class="empty-state-description">Los usuarios aparecerán conforme accedan al sistema</p>
+        </div>
+      `;
+      return;
+    }
+    
+    // Generar lista de usuarios
+    let usersHTML = '<div class="users-grid">';
+    
+    users.forEach(user => {
+      const firstSeen = new Date(user.firstSeen).toLocaleString();
+      const lastSeen = new Date(user.lastSeen).toLocaleString();
+      const timeDiff = new Date() - new Date(user.lastSeen);
+      const isOnline = timeDiff < 30000; // Considerado online si última actividad < 30 segundos
+      
+      // Determinar si tiene acceso admin
+      const adminIPs = ['localhost', '127.0.0.1', '10.252.15.122', '10.252.15.245'];
+      const hasAdminAccess = adminIPs.some(ip => user.ip.includes(ip)) || user.ip === '::1';
+      
+      // Obtener navegador y sistema operativo
+      const browserInfo = extractBrowserInfo(user.userAgent);
+      
+      usersHTML += `
+        <div class="user-card ${isOnline ? 'online' : 'offline'}">
+          <div class="user-header">
+            <div class="user-status">
+              <div class="status-indicator ${isOnline ? 'online' : 'offline'}"></div>
+              <span class="user-ip">${user.ip}</span>
+              ${hasAdminAccess ? '<span class="admin-badge"><i class="fas fa-crown"></i> Admin</span>' : ''}
+            </div>
+            <div class="user-activity">
+              <span class="activity-count">${user.totalRequests} peticiones</span>
+            </div>
+          </div>
+          
+          <div class="user-details">
+            <div class="detail-item">
+              <i class="fas fa-clock"></i>
+              <span>Primera visita: ${firstSeen}</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-history"></i>
+              <span>Última actividad: ${lastSeen}</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-browser"></i>
+              <span>${browserInfo.browser} en ${browserInfo.os}</span>
+            </div>
+            <div class="detail-item">
+              <i class="fas fa-file-alt"></i>
+              <span>Páginas visitadas: ${user.pages.length}</span>
+            </div>
+          </div>
+          
+          <div class="user-pages">
+            <strong>Páginas accedidas:</strong>
+            <div class="pages-list">
+              ${user.pages.map(page => `<span class="page-tag">${page}</span>`).join('')}
+            </div>
+          </div>
+        </div>
+      `;
+    });
+    
+    usersHTML += '</div>';
+    usersList.innerHTML = usersHTML;
+  }
+  
+  function extractBrowserInfo(userAgent) {
+    let browser = 'Desconocido';
+    let os = 'Desconocido';
+    
+    if (!userAgent) return { browser, os };
+    
+    // Detectar navegador
+    if (userAgent.includes('Chrome')) browser = 'Chrome';
+    else if (userAgent.includes('Firefox')) browser = 'Firefox';
+    else if (userAgent.includes('Safari')) browser = 'Safari';
+    else if (userAgent.includes('Edge')) browser = 'Edge';
+    else if (userAgent.includes('Opera')) browser = 'Opera';
+    
+    // Detectar sistema operativo
+    if (userAgent.includes('Windows')) os = 'Windows';
+    else if (userAgent.includes('Mac')) os = 'macOS';
+    else if (userAgent.includes('Linux')) os = 'Linux';
+    else if (userAgent.includes('Android')) os = 'Android';
+    else if (userAgent.includes('iOS')) os = 'iOS';
+    
+    return { browser, os };
+  }
+  
+  async function clearUserLogs() {
+    if (!isAdmin) {
+      alert('No tienes permisos para limpiar los logs.');
+      return;
+    }
+    
+    if (!confirm('¿Estás seguro de que quieres limpiar todos los logs de usuarios? Esta acción no se puede deshacer.')) {
+      return;
+    }
+    
+    try {
+      const response = await fetch('/api/clear-user-logs', {
+        method: 'DELETE'
+      });
+      
+      if (!response.ok) {
+        throw new Error(`Error ${response.status}: ${response.statusText}`);
+      }
+      
+      showSuccess('Logs de usuarios limpiados correctamente');
+      loadUserStats(); // Recargar estadísticas
+      
+    } catch (error) {
+      console.error('Error limpiando logs:', error);
+      alert('Error al limpiar los logs: ' + error.message);
     }
   }
   
