@@ -127,8 +127,21 @@ function processCSVData(csvData, fileName, reportId) {
     }
   }
   
-  // Columnas requeridas
+  // Columnas requeridas (nombres que aparecerán en la tabla)
   const requiredColumns = [
+    'Requisition #', 
+    'Status', 
+    'Net total', 
+    'Originated by', 
+    'Date of last approval', 
+    'Sent for approval date', 
+    'Last approver of the document', 
+    'Last approver to date',
+    'Requisition'
+  ];
+  
+  // Mapeo de nombres de columnas (CSV -> Tabla)
+  const csvColumnNames = [
     'Requisition #', 
     'Status', 
     'Net total', 
@@ -140,8 +153,8 @@ function processCSVData(csvData, fileName, reportId) {
     'Requisition #(Corcentric ID)'
   ];
   
-  // Indices de las columnas requeridas
-  const columnIndices = requiredColumns.map(col => headers.indexOf(col));
+  // Indices de las columnas requeridas usando los nombres del CSV
+  const columnIndices = csvColumnNames.map(col => headers.indexOf(col));
   
   // Extraer solo las columnas requeridas
   const finalData = filteredData.map(row => {

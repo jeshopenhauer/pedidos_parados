@@ -36,25 +36,16 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Función para detectar si es administrador o usuario de solo visualización
   function detectUserRole() {
-    const hostname = window.location.hostname;
     const roleStatus = document.getElementById('roleStatus');
     const roleText = document.getElementById('roleText');
     const uploadSection = document.getElementById('uploadSection');
+    const roleIndicator = document.querySelector('.role-indicator');
     
-    // Verificar si se fuerza el modo visualización con parámetro URL
-    const urlParams = new URLSearchParams(window.location.search);
-    const forceViewer = urlParams.get('viewer') === 'true';
+    // Verificar si está autenticado como admin
+    const isAuthenticated = localStorage.getItem('adminAuthenticated') === 'true';
     
-    // Lista de IPs y hostnames con permisos de administrador
-    const adminHosts = [
-      'localhost',
-      '127.0.0.1',
-      '10.252.15.122',  // Tu IP
-      '10.252.15.245'   // IP de tu jefe
-    ];
-    
-    if (adminHosts.includes(hostname) && !forceViewer) {
-      // Usuario administrador
+    if (isAuthenticated) {
+      // Usuario administrador autenticado
       isAdmin = true;
       roleStatus.className = 'status-dot admin';
       roleText.textContent = 'Administrador';
@@ -64,8 +55,13 @@ document.addEventListener('DOMContentLoaded', function() {
       
       document.body.classList.remove('viewer-mode');
       
+      // Actualizar tooltip para salir del modo admin
+      if (roleIndicator) {
+        roleIndicator.title = 'Hacer clic para salir del modo administrador';
+      }
+      
     } else {
-      // Usuario de solo visualización (acceso por IP de red)
+      // Usuario de solo visualización (modo por defecto)
       isAdmin = false;
       roleStatus.className = 'status-dot viewer';
       roleText.textContent = 'Solo Visualización';
@@ -74,7 +70,40 @@ document.addEventListener('DOMContentLoaded', function() {
       if (uploadSection) uploadSection.style.display = 'none';
       
       document.body.classList.add('viewer-mode');
+      
+      // Actualizar tooltip para entrar en modo admin
+      if (roleIndicator) {
+        roleIndicator.title = 'Hacer clic para acceder al modo administrador';
+      }
     }
+  }
+  
+  // Función para solicitar acceso de administrador
+  function requestAdminAccess() {
+    if (isAdmin) {
+      // Si ya es admin, salir del modo admin
+      logoutAdmin();
+    } else {
+      // Pedir contraseña
+      const password = prompt('Introduce la contraseña de administrador:');
+      
+      if (password === 'caracoles') {
+        // Contraseña correcta
+        localStorage.setItem('adminAuthenticated', 'true');
+        detectUserRole();
+        showSuccess('¡Acceso de administrador activado!');
+      } else if (password !== null) {
+        // Contraseña incorrecta (si no es null, es que no canceló)
+        alert('Contraseña incorrecta');
+      }
+    }
+  }
+  
+  // Función para salir del modo administrador
+  function logoutAdmin() {
+    localStorage.removeItem('adminAuthenticated');
+    detectUserRole();
+    showSuccess('Modo visualización activado');
   }
   
   // Funciones principales
@@ -411,4 +440,5 @@ document.addEventListener('DOMContentLoaded', function() {
   window.closeTable = closeTable;
   window.printTable = printTable;
   window.loadReportsFromServer = loadReportsFromServer;
+  window.requestAdminAccess = requestAdminAccess;
 });

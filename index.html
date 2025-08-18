@@ -17,7 +17,7 @@
           Pedidos Parados
         </h1>
         <!-- Indicador de Rol -->
-        <div class="role-indicator">
+        <div class="role-indicator" onclick="requestAdminAccess()" style="cursor: pointer;" title="Hacer clic para acceder al modo administrador">
           <div id="roleStatus" class="status-dot detecting"></div>
           <span id="roleText" class="role-text">Detectando...</span>
         </div>
@@ -68,9 +68,6 @@
             <div class="reports-actions">
               <button class="action-btn refresh-btn" title="Actualizar">
                 <i class="fas fa-sync-alt"></i>
-              </button>
-              <button class="action-btn stats-btn admin-only" title="Ver Estadísticas" onclick="window.open('/stats.html', '_blank')">
-                <i class="fas fa-chart-bar"></i>
               </button>
               <button class="action-btn delete-btn admin-only" title="Eliminar Todos">
                 <i class="fas fa-trash-alt"></i>
