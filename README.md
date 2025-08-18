@@ -1,3 +1,6 @@
+ https://github.com/jeshopenhauer/pedidos_parados
+
+
 # Gestor de Pedidos Parados
 
 Esta aplicación permite cargar, filtrar y visualizar datos de pedidos parados desde archivos CSV.
