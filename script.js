@@ -135,7 +135,6 @@ document.addEventListener('DOMContentLoaded', function() {
       id: reportId,
       name: `Reporte de pedidos parados - ${new Date().toLocaleDateString()}`,
       date: new Date().toLocaleString(),
-      fileName: fileName,
       headers: requiredColumns,
       data: finalData,
       recordCount: finalData.length
@@ -272,7 +271,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Actualizar metadatos de la tabla
     tableReportName.textContent = report.name;
     tableGeneratedDate.textContent = report.date;
-    tableFileName.textContent = report.fileName;
+    tableFileName.textContent = report.name;
     tableRecordCount.textContent = `${report.recordCount} registros`;
     
     // Generar tabla HTML
