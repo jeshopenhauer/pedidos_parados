@@ -1,1010 +1,433 @@
-// === CONFIGURACIÓN ===
-const CONFIG = {
-  SELECTED_COLUMNS: [0, 1, 2, 3, 4, 11], // Requisition #, Name, Date, Originated by, Status, Net total
-  COLUMN_NAMES: ['Requisition #', 'Name', 'Date of document', 'Originated by', 'Status', 'Net total'],
-  DATE_COLUMN_INDEX: 2,
-  STATUS_COLUMN_INDEX: 4,
-  NET_TOTAL_COLUMN_INDEX: 5
-};
-
-// === ESTADO GLOBAL ===
-let db;
-let reports = [];
-let isInitialized = false;
-
-// === ELEMENTOS DOM ===
-const elements = {
-  csvInput: null,
-  reportsList: null,
-  reportsCount: null,
-  refreshBtn: null,
-  editBtn: null,
-  deleteBtn: null
-};
-
-// === INICIALIZACIÓN DE BASE DE DATOS ===
-async function initDB() {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open('CSVReportsDB', 2);
-    request.onerror = () => reject(request.error);
-    request.onsuccess = () => {
-      db = request.result;
-      window.db = db;
-      resolve(db);
-    };
-    request.onupgradeneeded = (event) => {
-      db = event.target.result;
-      window.db = db;
-      // Reports store
-      if (!db.objectStoreNames.contains('reports')) {
-        const reportStore = db.createObjectStore('reports', { keyPath: 'id', autoIncrement: true });
-        reportStore.createIndex('name', 'name', { unique: false });
-        reportStore.createIndex('uploadDate', 'uploadDate', { unique: false });
-      }
-    };
-  });
-}
-
-// === OPERACIONES DE BASE DE DATOS ===
-async function saveReport(reportData) {
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['reports'], 'readwrite');
-    const store = transaction.objectStore('reports');
-    
-    const report = {
-      ...reportData,
-      uploadDate: new Date().toISOString(),
-      createdAt: new Date().toLocaleString()
-    };
-    
-    const request = store.add(report);
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function getAllReports() {
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['reports'], 'readonly');
-    const store = transaction.objectStore('reports');
-    
-    const request = store.getAll();
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function deleteReportFromDB(reportId) {
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['reports'], 'readwrite');
-    const store = transaction.objectStore('reports');
-    
-    const request = store.delete(reportId);
-    request.onsuccess = () => resolve();
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function updateReport(reportId, updatedData) {
-  return new Promise((resolve, reject) => {
-    const transaction = db.transaction(['reports'], 'readwrite');
-    const store = transaction.objectStore('reports');
-    
-    const getRequest = store.get(reportId);
-    getRequest.onsuccess = () => {
-      const report = getRequest.result;
-      if (report) {
-        Object.assign(report, updatedData);
-        const putRequest = store.put(report);
-        putRequest.onsuccess = () => resolve(putRequest.result);
-        putRequest.onerror = () => reject(putRequest.error);
-      } else {
-        reject(new Error('Report not found'));
-      }
-    };
-    getRequest.onerror = () => reject(getRequest.error);
-  });
-}
-
-
-
-// === PROCESAMIENTO DE CSV ===
-function parseCSVLine(line) {
-  const result = [];
-  let current = '';
-  let inQuotes = false;
-  
-  for (let i = 0; i < line.length; i++) {
-    const char = line[i];
-    
-    if (char === '"') {
-      inQuotes = !inQuotes;
-    } else if (char === ',' && !inQuotes) {
-      result.push(current.trim());
-      current = '';
-    } else {
-      current += char;
-    }
-  }
-  
-  result.push(current.trim());
-  return result;
-}
-
-function filterCSVColumns(csvText) {
-  try {
-    const lines = csvText.trim().split('\n').filter(line => line.trim());
-    if (lines.length === 0) throw new Error('El archivo CSV está vacío');
-    
-    // Parsear cabecera
-    const header = parseCSVLine(lines[0]);
-    const filteredHeader = CONFIG.SELECTED_COLUMNS.map(i => header[i] || '').join(',');
-    
-    // Procesar filas
-    const filteredRows = lines.slice(1)
-      .map(line => {
-        const cols = parseCSVLine(line);
-        // Filtrar por Status 'More information needed'
-        if (cols[CONFIG.STATUS_COLUMN_INDEX] === 'More information needed') {
-          return CONFIG.SELECTED_COLUMNS.map(i => cols[i] || '').join(',');
-        }
-        return '';
-      })
-      .filter(row => row.trim() !== ',,,,,' && row.trim() !== ''); // Filtrar filas vacías
-    
-    if (filteredRows.length === 0) {
-      throw new Error('No se encontraron datos válidos en el CSV');
-    }
-    
-    return [filteredHeader, ...filteredRows].join('\n');
-  } catch (error) {
-    console.error('Error filtering CSV:', error);
-    throw new Error(`Error procesando CSV: ${error.message}`);
-  }
-}
-
-// === UTILIDADES ===
-function formatFileSize(bytes) {
-  if (bytes === 0) return '0 Bytes';
-  const k = 1024;
-  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-  const i = Math.floor(Math.log(bytes) / Math.log(k));
-  return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-}
-
-function formatDate(date) {
-  return new Date(date).toLocaleDateString('es-ES', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
-  });
-}
-
-function formatCurrency(value) {
-  // Limpiar el valor para extraer solo números
-  const cleanValue = value.toString().replace(/[^0-9.-]/g, '');
-  const numericValue = parseFloat(cleanValue);
-  
-  if (isNaN(numericValue)) {
-    return value; // Retornar valor original si no es un número
-  }
-  
-  // Formatear como moneda europea
-  return new Intl.NumberFormat('es-ES', {
-    style: 'currency',
-    currency: 'EUR',
-    minimumFractionDigits: 2,
-    maximumFractionDigits: 2
-  }).format(numericValue);
-}
-
-function showNotification(message, type = 'info') {
-  const notification = document.createElement('div');
-  notification.className = `notification notification-${type}`;
-  
-  const icon = type === 'success' ? 'check-circle' : 
-               type === 'error' ? 'exclamation-circle' : 
-               'info-circle';
-  
-  notification.innerHTML = `
-    <i class="fas fa-${icon}"></i>
-    <span>${message}</span>
-  `;
-  
-  document.body.appendChild(notification);
-  
-  setTimeout(() => {
-    notification.classList.add('fade-out');
-    setTimeout(() => {
-      if (notification.parentNode) {
-        document.body.removeChild(notification);
-      }
-    }, 300);
-  }, 3000);
-}
-
-function generateReportName(fileName) {
-  return fileName
-    .replace('.csv', '')
-    .replace(/[^a-zA-Z0-9_\-\s]/g, '_')
-    .toUpperCase()
-    .substring(0, 50); // Limitar longitud
-}
-
-
-// === INICIALIZACIÓN DOM ===
-function initializeDOM() {
-  const elementIds = [
-    'csvInput', 'reportsList', 'reportsCount'
-  ];
-  
-  for (const id of elementIds) {
-    elements[id] = document.getElementById(id);
-    if (!elements[id]) {
-      console.error(`Elemento ${id} no encontrado`);
-      return false;
-    }
-  }
-  
-  // Elementos opcionales
-  elements.refreshBtn = document.querySelector('.refresh-btn');
-  elements.editBtn = document.querySelector('.edit-btn');
-  elements.deleteBtn = document.querySelector('.delete-btn');
-  
-  return true;
-}
-
-// === CARGA DE REPORTES ===
-async function loadReportsFromDB() {
-  try {
-    const dbReports = await getAllReports();
-    reports = dbReports.map(dbReport => ({
-      id: dbReport.id,
-      name: dbReport.name,
-      csv: dbReport.csv,
-      filteredCsv: dbReport.filteredCsv,
-      date: new Date(dbReport.uploadDate),
-      size: dbReport.size,
-      originalFileName: dbReport.originalFileName
-    }));
-    
-    renderReports();
-    updateReportsCount();
-    console.log(`Cargados ${reports.length} reportes desde la base de datos`);
-  } catch (error) {
-    console.error('Error cargando reportes:', error);
-    showNotification('Error cargando reportes desde la base de datos', 'error');
-  }
-}
-
-// === RENDERIZADO ===
-function updateReportsCount() {
-  const count = reports.length;
-  if (elements.reportsCount) {
-    elements.reportsCount.textContent = `${count} reporte${count !== 1 ? 's' : ''}`;
-  }
-}
-
-function renderReports() {
-  if (!elements.reportsList) return;
-  
-  elements.reportsList.innerHTML = '';
-  
-  if (reports.length === 0) {
-    elements.reportsList.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">
-          <i class="fas fa-inbox"></i>
-        </div>
-        <h3 class="empty-state-title">No hay reportes</h3>
-        <p class="empty-state-description">Sube un archivo CSV para comenzar</p>
-      </div>
-    `;
-    return;
-  }
-
-  reports.forEach((report, idx) => {
-    const entry = document.createElement('div');
-    entry.className = 'report-entry';
-    entry.onclick = () => {
-      openReport(idx);
-      showNotaModal(reports[idx], idx);
-    };
-
-    entry.innerHTML = `
-      <div class="report-info">
-        <div class="report-title">${report.name}</div>
-        <div class="report-meta">
-          <div class="report-meta-item">
-            <i class="fas fa-calendar"></i>
-            <span>${formatDate(report.date)}</span>
-          </div>
-          <div class="report-meta-item">
-            <i class="fas fa-file"></i>
-            <span>${formatFileSize(report.size)}</span>
-          </div>
-          <div class="report-meta-item">
-            <i class="fas fa-filter"></i>
-            <span>${CONFIG.COLUMN_NAMES.length} columnas</span>
-          </div>
-        </div>
-      </div>
-      <div class="report-actions">
-        <button class="report-btn download-btn" onclick="event.stopPropagation(); downloadReport(${idx});" title="Descargar CSV filtrado">
-          <i class="fas fa-download"></i>
-        </button>
-        <button class="report-btn delete-btn" onclick="event.stopPropagation(); deleteReport(${idx});" title="Eliminar reporte">
-          <i class="fas fa-trash"></i>
-        </button>
-      </div>
-    `;
-
-    elements.reportsList.appendChild(entry);
-  });
-}
-
-// === ACCIONES ===
-async function processCSVFile(file) {
-  if (!file.name.toLowerCase().endsWith('.csv')) {
-    throw new Error('Por favor selecciona un archivo CSV válido');
-  }
-  
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    
-    reader.onload = async function(event) {
-      try {
-        const csvText = event.target.result;
-        if (!csvText || csvText.trim().length === 0) {
-          throw new Error('El archivo CSV está vacío');
-        }
-        
-        const filteredCsv = filterCSVColumns(csvText);
-        const name = generateReportName(file.name);
-        
-        const report = {
-          name: name,
-          csv: csvText,
-          filteredCsv: filteredCsv,
-          size: file.size,
-          originalFileName: file.name
-        };
-        
-        const reportId = await saveReport(report);
-        report.id = reportId;
-        report.date = new Date();
-        
-        reports.push(report);
-        renderReports();
-        updateReportsCount();
-        
-        showNotification(`Archivo "${file.name}" procesado exitosamente`, 'success');
-        resolve(report);
-        
-      } catch (error) {
-        console.error('Error procesando archivo:', error);
-        reject(error);
-      }
-    };
-    
-    reader.onerror = () => reject(new Error('Error leyendo el archivo'));
-    reader.readAsText(file, 'UTF-8');
-  });
-}
-
-async function deleteReport(idx) {
-  const report = reports[idx];
-  if (confirm(`¿Estás seguro de que quieres eliminar "${report.name}"?`)) {
-    try {
-      if (report.id) {
-        await deleteReportFromDB(report.id);
-      }
-      
-      const reportName = report.name;
-      reports.splice(idx, 1);
-      renderReports();
-      updateReportsCount();
-      showNotification(`Reporte "${reportName}" eliminado`, 'success');
-    } catch (error) {
-      console.error('Error eliminando reporte:', error);
-      showNotification('Error eliminando el reporte', 'error');
-    }
-  }
-}
-
-function downloadReport(idx) {
-  const report = reports[idx];
-  const blob = new Blob([report.filteredCsv], { type: 'text/csv;charset=utf-8' });
-  const url = window.URL.createObjectURL(blob);
-  
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `${report.name}_filtrado.csv`;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  window.URL.revokeObjectURL(url);
-  
-  showNotification(`Descargado "${report.name}_filtrado.csv"`, 'success');
-}
-
-function openReport(idx) {
-  const report = reports[idx];
-  
-  try {
-    const lines = report.filteredCsv.split('\n').filter(line => line.trim());
-    const headers = parseCSVLine(lines[0]);
-    let rows = lines.slice(1).filter(line => line.trim() !== '');
-    
-    // Ordenar por fecha (más reciente primero)
-    rows.sort((a, b) => {
-      const rowA = parseCSVLine(a);
-      const rowB = parseCSVLine(b);
-      const dateA = new Date(rowA[CONFIG.DATE_COLUMN_INDEX] || '1900-01-01');
-      const dateB = new Date(rowB[CONFIG.DATE_COLUMN_INDEX] || '1900-01-01');
-      return dateB - dateA;
-    });
-    
-    // Crear tabla HTML
-    let tableHTML = `
-      <table class="csv-table">
-        <thead>
-          <tr>
-            ${headers.map((header, idx) => {
-              let headerContent = header.trim();
-              if (idx === CONFIG.DATE_COLUMN_INDEX) {
-                headerContent += ' <i class="fas fa-sort-down" style="margin-left: 5px; opacity: 0.7;"></i>';
-              }
-              return `<th>${headerContent}</th>`;
-            }).join('')}
-          </tr>
-        </thead>
-        <tbody>
-          ${rows.map((row, rowIndex) => {
-            const cells = parseCSVLine(row);
-            const requisitionId = cells[0] ? cells[0].trim() : `Row_${rowIndex + 1}`;
-            return `
-              <tr>
-                ${cells.map((cell, cellIndex) => {
-                  let cellContent = cell.trim();
-                  let cellClass = '';
-                  
-                  // Formatear fecha
-                  if (cellIndex === CONFIG.DATE_COLUMN_INDEX && cellContent) {
-                    try {
-                      const date = new Date(cellContent);
-                      if (!isNaN(date.getTime())) {
-                        cellContent = date.toLocaleDateString('es-ES', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric'
-                        });
-                      }
-                    } catch (e) {
-                      // Mantener formato original si falla el parseo
-                    }
-                  }
-                  
-                  // Formatear Net total como moneda
-                  if (cellIndex === CONFIG.NET_TOTAL_COLUMN_INDEX && cellContent) {
-                    cellContent = formatCurrency(cellContent);
-                    cellClass = ' class="currency-cell"';
-                  }
-                  
-                  // Resaltar estado "More information needed"
-                  if (cellIndex === CONFIG.STATUS_COLUMN_INDEX && 
-                      cellContent.toLowerCase().includes('more information needed')) {
-                    cellClass = ' class="status-info-needed"';
-                  }
-                  
-                  return `<td${cellClass}>${cellContent}</td>`;
-                }).join('')}
-              </tr>
-            `;
-          }).join('')}
-        </tbody>
-      </table>
-    `;
-
-    // Mostrar la tabla en la página principal
-    document.getElementById('tableReportName').textContent = report.name;
-    document.getElementById('tableGeneratedDate').textContent = formatDate(new Date());
-    document.getElementById('tableFileName').textContent = report.originalFileName;
-    document.getElementById('tableRecordCount').textContent = `${rows.length} registros`;
-    document.getElementById('tableContainer').innerHTML = tableHTML;
-    document.getElementById('tableSection').style.display = 'flex';
-
-    // Configurar event listeners para los botones de captura
-    setupScreenshotButtons();
-    
-    // Configurar event listener para cerrar al hacer click fuera del modal
-    setupModalCloseListener();
-    
-  } catch (error) {
-    console.error('Error abriendo reporte:', error);
-    showNotification('Error abriendo el reporte', 'error');
-  }
-}
-
-// Función para cerrar la tabla
-function closeTable() {
+document.addEventListener('DOMContentLoaded', function() {
+  // Referencias a elementos del DOM
+  const csvInput = document.getElementById('csvInput');
+  const reportsList = document.getElementById('reportsList');
   const tableSection = document.getElementById('tableSection');
-  tableSection.style.animation = 'fadeOut 0.3s ease-out';
-  setTimeout(() => {
-    tableSection.style.display = 'none';
-    tableSection.style.animation = '';
-  }, 300);
-}
-
-// Función para configurar el cierre del modal al hacer click fuera
-function setupModalCloseListener() {
-  const tableSection = document.getElementById('tableSection');
-  const tableCard = tableSection.querySelector('.table-card');
+  const reportsCount = document.getElementById('reportsCount');
+  const tableReportName = document.getElementById('tableReportName');
+  const tableGeneratedDate = document.getElementById('tableGeneratedDate');
+  const tableFileName = document.getElementById('tableFileName');
+  const tableRecordCount = document.getElementById('tableRecordCount');
+  const tableContainer = document.getElementById('tableContainer');
   
-  // Remover listener anterior si existe
-  tableSection.removeEventListener('click', handleModalClick);
+  // Estado de la aplicación
+  let reports = [];
   
-  // Agregar nuevo listener
-  tableSection.addEventListener('click', handleModalClick);
+  // Event Listeners
+  csvInput.addEventListener('change', handleFileUpload);
+  document.querySelector('.refresh-btn').addEventListener('click', refreshReports);
+  document.querySelector('.delete-btn').addEventListener('click', deleteAllReports);
   
-  function handleModalClick(e) {
-    // Si el click fue en el fondo del modal (no en la card), cerrar
-    if (e.target === tableSection) {
-      closeTable();
-    }
-  }
+  // Cargar reportes guardados
+  loadReportsFromServer();
   
-  // También permitir cerrar con ESC
-  function handleKeyPress(e) {
-    if (e.key === 'Escape' && tableSection.style.display === 'flex') {
-      closeTable();
-    }
-  }
-  
-  // Remover listener anterior y agregar nuevo
-  document.removeEventListener('keydown', handleKeyPress);
-  document.addEventListener('keydown', handleKeyPress);
-}
-
-// Función para imprimir la tabla
-function printTable() {
-  // Incluir jsPDF si no está presente
-  if (typeof window.jspdf === 'undefined') {
-    const script = document.createElement('script');
-    script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js';
-    script.onload = generatePDF;
-    document.body.appendChild(script);
-  } else {
-    generatePDF();
-  }
-
-  function generatePDF() {
-    const { jsPDF } = window.jspdf || window.jspdf;
-    const doc = new jsPDF({ orientation: 'landscape' });
-    const reportName = document.getElementById('tableReportName').textContent;
-    const generatedDate = document.getElementById('tableGeneratedDate').textContent;
-    const fileName = document.getElementById('tableFileName').textContent;
-    const recordCount = document.getElementById('tableRecordCount').textContent;
-    doc.setFont('helvetica');
-    doc.setFontSize(18);
-    doc.text(reportName, 14, 18);
-    doc.setFontSize(12);
-    doc.text(`Fecha: ${generatedDate}`, 14, 28);
-    doc.text(`Archivo: ${fileName}`, 14, 36);
-    doc.text(`Registros: ${recordCount}`, 14, 44);
-
-    // Extraer la tabla
-    const table = document.querySelector('#tableContainer table');
-    if (table) {
-      let head = [];
-      let body = [];
-      for (let r = 0; r < table.rows.length; r++) {
-        let row = [];
-        for (let c = 0; c < table.rows[r].cells.length; c++) {
-          row.push(table.rows[r].cells[c].innerText);
-        }
-        if (r === 0) head.push(row);
-        else body.push(row);
-      }
-      // Incluir autoTable si no está presente
-      if (typeof doc.autoTable === 'undefined') {
-        const script = document.createElement('script');
-        script.src = 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js';
-        script.onload = () => {
-          doc.autoTable({
-            head: head,
-            body: body,
-            startY: 54,
-            theme: 'grid',
-            styles: { fontSize: 10, cellPadding: 6 },
-            headStyles: { fillColor: [21, 101, 192] }
-          });
-          doc.save(`${reportName}_informe.pdf`);
-          showNotification('PDF generado y descargado', 'success');
-        };
-        document.body.appendChild(script);
-        return;
-      }
-      doc.autoTable({
-        head: head,
-        body: body,
-        startY: 54,
-        theme: 'grid',
-        styles: { fontSize: 10, cellPadding: 6 },
-        headStyles: { fillColor: [21, 101, 192] }
-      });
-    }
-    doc.save(`${reportName}_informe.pdf`);
-    showNotification('PDF generado y descargado', 'success');
-  }
-}
-
-// Función para configurar los event listeners de los botones de captura
-function setupScreenshotButtons() {
-  // Solo botones de ver capturas (que ahora incluyen añadir)
-  document.querySelectorAll('.view-screenshots-btn').forEach((btn, index) => {
-    btn.addEventListener('click', function(e) {
-      e.preventDefault();
-      const requisitionId = this.getAttribute('data-requisition');
-      if (requisitionId) {
-        window.open(`screenshots.html?id=${encodeURIComponent(requisitionId)}`, '_blank');
-      } else {
-        showNotification('ID de requisición no encontrado', 'error');
-      }
-    });
-  });
-}
-
-function getReportStyles() {
-  return `
-    body { 
-      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
-      margin: 0; 
-      padding: 20px; 
-      background: #e3f2fd;
-      min-height: 100vh;
-    }
-    
-    .container {
-      max-width: 1200px;
-      margin: 0 auto;
-      background: rgba(255, 255, 255, 0.98);
-      border-radius: 12px;
-      padding: 30px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-    }
-    
-    .header { 
-      text-align: center;
-      margin-bottom: 30px; 
-      padding-bottom: 20px;
-      border-bottom: 2px solid #e2e8f0;
-    }
-    
-    .header h1 { 
-      margin: 0; 
-      color: #1565c0; 
-      font-size: 2.5rem;
-      font-weight: 700;
-      margin-bottom: 10px;
-    }
-    
-    .header .meta { 
-      color: #546e7a; 
-      font-size: 1.1rem;
-      display: flex;
-      justify-content: center;
-      gap: 30px;
-      flex-wrap: wrap;
-    }
-    
-    .meta-item {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-    
-    .meta-item i {
-      color: #1976d2;
-    }
-    
-    .csv-table { 
-      width: 100%; 
-      border-collapse: collapse; 
-      margin-top: 20px;
-      background: white;
-      border-radius: 8px;
-      overflow: hidden;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-      border: 1px solid #e0e7ff;
-    }
-    
-    .csv-table th { 
-      background: #f8fafc; 
-      color: #374151; 
-      padding: 12px 16px; 
-      text-align: left; 
-      font-weight: 600;
-      font-size: 0.875rem;
-      border-bottom: 2px solid #e5e7eb;
-    }
-    
-    .csv-table td { 
-      padding: 12px 16px; 
-      border-bottom: 1px solid #f3f4f6; 
-      font-size: 0.875rem;
-      vertical-align: middle;
-    }
-    
-    .csv-table tbody tr:hover { 
-      background-color: #f8fafc; 
-    }
-    
-    .csv-table tbody tr:nth-child(odd) {
-      background-color: #ffffff;
-    }
-    
-    .csv-table tbody tr:nth-child(even) {
-      background-color: #f9fafb;
-    }
-    
-    .status-info-needed {
-      background-color: #2196f3 !important;
-      color: white !important;
-      font-weight: 600;
-      text-align: center;
-      border-radius: 4px;
-      padding: 8px 12px !important;
-    }
-    
-    .currency-cell {
-      text-align: right !important;
-      font-weight: 600;
-      color: #059669 !important;
-      background-color: #f0fdf4 !important;
-      font-family: 'Courier New', monospace;
-    }
-    
-    .screenshot-actions {
-      display: flex;
-      gap: 5px;
-      justify-content: center;
-    }
-    
-    .action-btn {
-      background: #f8fafc;
-      border: 1px solid #e2e8f0;
-      border-radius: 6px;
-      padding: 6px 8px;
-      cursor: pointer;
-      transition: all 0.2s ease;
-      font-size: 0.75rem;
-    }
-    
-    .action-btn:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-    }
-    
-  
-    
-  
-    
-    @media (max-width: 768px) {
-      .container {
-        margin: 10px;
-        padding: 20px;
-      }
-      
-      .header h1 {
-        font-size: 2rem;
-      }
-      
-      .header .meta {
-        flex-direction: column;
-        gap: 10px;
-      }
-      
-      .csv-table {
-        font-size: 0.8rem;
-      }
-      
-      .csv-table th,
-      .csv-table td {
-        padding: 8px 6px;
-      }
-    }
-  `;
-}
-
-
-
-// === EVENTOS ===
-function setupEventListeners() {
-  if (!elements.csvInput) {
-    console.error('No se pueden configurar los eventos: elementos DOM no encontrados');
-    return;
-  }
-  
-  // Input de archivo CSV
-  elements.csvInput.addEventListener('change', async (e) => {
-    const file = e.target.files[0];
+  // Funciones principales
+  function handleFileUpload(event) {
+    const file = event.target.files[0];
     if (!file) return;
     
-/*     // Estado de carga
-    elements.csvInput.disabled = true;
-    const label = document.querySelector('.file-input-label');
-    const originalText = label.innerHTML;
-    label.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Procesando...'; */
-    
-    try {
-      await processCSVFile(file);
-      elements.csvInput.value = ''; // Limpiar input
-    } catch (error) {
-      console.error('Error procesando archivo:', error);
-      showNotification(error.message, 'error');
-    } finally {
-      // Restaurar estado
-      elements.csvInput.disabled = false;
-      label.innerHTML = originalText;
-    }
-  });
-
-  // Botón de refrescar
-  if (elements.refreshBtn) {
-    elements.refreshBtn.addEventListener('click', () => {
-      renderReports();
-      showNotification('Reportes actualizados', 'info');
-    });
-  }
-
-  // Botón de eliminar todos
-  if (elements.deleteBtn) {
-    elements.deleteBtn.addEventListener('click', async () => {
-      if (reports.length === 0) {
-        showNotification('No hay reportes para eliminar', 'info');
-        return;
-      }
+    const reader = new FileReader();
+    reader.onload = function(e) {
+      const csvData = e.target.result;
       
-      if (confirm(`¿Eliminar todos los reportes (${reports.length})? Esta acción no se puede deshacer.`)) {
-        try {
-          const deletePromises = reports
-            .filter(report => report.id)
-            .map(report => deleteReportFromDB(report.id));
-          
-          await Promise.all(deletePromises);
-          
-          const count = reports.length;
-          reports = [];
-          renderReports();
-          updateReportsCount();
-          showNotification(`${count} reporte${count !== 1 ? 's' : ''} eliminado${count !== 1 ? 's' : ''}`, 'success');
-        } catch (error) {
-          console.error('Error eliminando reportes:', error);
-          showNotification('Error eliminando algunos reportes', 'error');
-        }
+      // Mostrar indicador de carga
+      reportsList.innerHTML = `
+        <div class="loading">
+          <i class="fas fa-spinner"></i>
+          Procesando archivo...
+        </div>
+      `;
+      
+      // Procesar y guardar en el servidor
+      uploadToServer(file, csvData);
+    };
+    reader.readAsText(file);
+  }
+  
+  function uploadToServer(file, csvData) {
+    // Crear FormData para enviar al servidor
+    const formData = new FormData();
+    formData.append('csvFile', file);
+    formData.append('fileName', file.name);
+    
+    // Mostrar mensaje de carga
+    reportsList.innerHTML = `
+      <div class="loading">
+        <i class="fas fa-spinner"></i>
+        Subiendo archivo al servidor...
+      </div>
+    `;
+    
+    // Aquí simularemos la llamada al servidor, en un entorno real usarías fetch o XMLHttpRequest
+    // Por ejemplo:
+    /*
+    fetch('/api/upload-csv', {
+      method: 'POST',
+      body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+      processCSVData(csvData, file.name, data.reportId);
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al subir el archivo. Por favor, inténtalo de nuevo.');
+      loadReportsFromServer();
+    });
+    */
+    
+    // Simulación de envío al servidor (eliminar en implementación real)
+    setTimeout(() => {
+      const reportId = Date.now();
+      processCSVData(csvData, file.name, reportId);
+      
+      // Resetear input de archivo
+      csvInput.value = '';
+    }, 1000);
+  }
+  
+  function processCSVData(csvData, fileName, reportId) {
+    // Parsear CSV
+    const rows = csvData.split('\n');
+    const headers = parseCSVRow(rows[0]);
+    
+    // Filtrar solo por Status="More information needed" o "To be approved"
+    const filteredData = [];
+    for (let i = 1; i < rows.length; i++) {
+      if (rows[i].trim() === '') continue;
+      
+      const rowData = parseCSVRow(rows[i]);
+      const status = rowData[headers.indexOf('Status')];
+      
+      if (status === 'More information needed' || status === 'To be approved') {
+        filteredData.push(rowData);
       }
+    }
+    
+    // Columnas requeridas
+    const requiredColumns = [
+      'Requisition #', 
+      'Status', 
+      'Net total', 
+      'Originated by', 
+      'Date of last approval', 
+      'Sent for approval date', 
+      'Last approver of the document', 
+      'Last approver to date',
+      'Requisition #(Corcentric ID)'
+    ];
+    
+    // Debug: mostrar las columnas que se van a usar
+    console.log('Columnas requeridas:', requiredColumns);
+    console.log('Headers encontrados en CSV:', headers);
+    
+    // Indices de las columnas requeridas
+    const columnIndices = requiredColumns.map(col => headers.indexOf(col));
+    console.log('Indices de columnas:', columnIndices);
+    
+    // Extraer solo las columnas requeridas
+    const finalData = filteredData.map(row => {
+      return columnIndices.map(index => row[index] || '');
+    });
+    
+    // Crear nuevo reporte
+    const report = {
+      id: reportId,
+      name: `Reporte de pedidos parados - ${new Date().toLocaleDateString()}`,
+      date: new Date().toLocaleString(),
+      fileName: fileName,
+      headers: requiredColumns,
+      data: finalData,
+      recordCount: finalData.length
+    };
+    
+    // En un entorno real, enviaríamos los datos procesados al servidor
+    // Por ahora, simulamos almacenamiento local
+    saveReportToServer(report);
+  }
+  
+  function saveReportToServer(report) {
+    // Simulación de guardado en servidor (reemplazar en implementación real)
+    /*
+    fetch('/api/save-report', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(report)
+    })
+    .then(response => response.json())
+    .then(data => {
+      loadReportsFromServer();
+    })
+    .catch(error => {
+      console.error('Error:', error);
+      alert('Error al guardar el reporte. Por favor, inténtalo de nuevo.');
+    });
+    */
+    
+    // Simulación (eliminar en implementación real)
+    setTimeout(() => {
+      reports.push(report);
+      localStorage.setItem('csvReports', JSON.stringify(reports));
+      renderReportsList();
+    }, 500);
+  }
+  
+  function loadReportsFromServer() {
+    // Simulación de carga desde servidor (reemplazar en implementación real)
+    /*
+    fetch('/api/get-reports')
+      .then(response => response.json())
+      .then(data => {
+        reports = data;
+        renderReportsList();
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        reportsList.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">
+              <i class="fas fa-exclamation-triangle"></i>
+            </div>
+            <h3 class="empty-state-title">Error al cargar reportes</h3>
+            <p class="empty-state-description">No se pudieron obtener los reportes del servidor</p>
+          </div>
+        `;
+      });
+    */
+    
+    // Simulación (eliminar en implementación real)
+    const savedReports = localStorage.getItem('csvReports');
+    if (savedReports) {
+      reports = JSON.parse(savedReports);
+      // Limpiar reportes que tengan la columna "Approval date"
+      reports = reports.filter(report => {
+        const hasApprovalDate = report.headers && report.headers.includes('Approval date');
+        if (hasApprovalDate) {
+          console.log('Eliminando reporte con columna Approval date:', report.name);
+          return false;
+        }
+        return true;
+      });
+      // Guardar los reportes limpiados
+      localStorage.setItem('csvReports', JSON.stringify(reports));
+    }
+    renderReportsList();
+  }
+  
+  function parseCSVRow(row) {
+    const result = [];
+    let insideQuotes = false;
+    let currentValue = '';
+    
+    for (let i = 0; i < row.length; i++) {
+      const char = row[i];
+      
+      if (char === '"' || char === "'") {
+        insideQuotes = !insideQuotes;
+      } else if (char === ',' && !insideQuotes) {
+        result.push(currentValue.trim());
+        currentValue = '';
+      } else {
+        currentValue += char;
+      }
+    }
+    
+    // Añadir el último valor
+    result.push(currentValue.trim());
+    
+    return result;
+  }
+  
+  function renderReportsList() {
+    // Actualizar contador
+    reportsCount.textContent = `${reports.length} reportes`;
+    
+    // Verificar si hay reportes
+    if (reports.length === 0) {
+      reportsList.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state-icon">
+            <i class="fas fa-inbox"></i>
+          </div>
+          <h3 class="empty-state-title">No hay reportes aún</h3>
+          <p class="empty-state-description">Sube un archivo CSV para comenzar</p>
+        </div>
+      `;
+      return;
+    }
+    
+    // Ordenar reportes por fecha (más recientes primero)
+    const sortedReports = [...reports].sort((a, b) => b.id - a.id);
+    
+    // Renderizar lista de reportes
+    reportsList.innerHTML = sortedReports.map(report => `
+      <div class="report-item" data-id="${report.id}">
+        <div class="report-icon">
+          <i class="fas fa-file-alt"></i>
+        </div>
+        <div class="report-details">
+          <h3 class="report-name">${report.name}</h3>
+          <div class="report-meta">
+            <span class="meta-date"><i class="fas fa-calendar"></i> ${report.date}</span>
+            <span class="meta-records"><i class="fas fa-table"></i> ${report.recordCount} registros</span>
+          </div>
+        </div>
+        <div class="report-actions">
+          <button class="action-btn delete-report-btn" title="Eliminar">
+            <i class="fas fa-trash"></i>
+          </button>
+        </div>
+      </div>
+    `).join('');
+    
+    // Añadir event listeners a los botones de cada reporte
+    document.querySelectorAll('.delete-report-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        const reportItem = e.target.closest('.report-item');
+        const reportId = parseInt(reportItem.dataset.id);
+        deleteReport(reportId);
+      });
+    });
+    
+    // Añadir event listener para ver reporte al hacer clic en toda la fila
+    document.querySelectorAll('.report-item').forEach(item => {
+      item.addEventListener('click', function() {
+        const reportId = parseInt(this.dataset.id);
+        showReportTable(reportId);
+      });
     });
   }
-}
-
-// === INICIALIZACIÓN PRINCIPAL ===
-async function initializeApplication() {
-  console.log('Inicializando aplicación...');
   
-  try {
-    // Inicializar DOM
-    if (!initializeDOM()) {
-      throw new Error('Error inicializando elementos DOM');
-    }
+  function showReportTable(reportId) {
+    const report = reports.find(r => r.id === reportId);
+    if (!report) return;
     
-    // Inicializar base de datos
-    await initDB();
-    console.log('Base de datos inicializada');
+    // Actualizar metadatos de la tabla
+    tableReportName.textContent = report.name;
+    tableGeneratedDate.textContent = report.date;
+    tableFileName.textContent = report.fileName;
+    tableRecordCount.textContent = `${report.recordCount} registros`;
     
-    // Cargar reportes existentes
-    await loadReportsFromDB();
+    // Generar tabla HTML
+    let tableHTML = '<table>';
     
-    // Configurar eventos
-    setupEventListeners();
+    // Encabezados
+    tableHTML += '<thead><tr>';
+    report.headers.forEach(header => {
+      tableHTML += `<th>${header}</th>`;
+    });
+    tableHTML += '</tr></thead>';
     
-    isInitialized = true;
-    console.log('Aplicación inicializada correctamente');
+    // Cuerpo de la tabla
+    tableHTML += '<tbody>';
+    report.data.forEach(row => {
+      tableHTML += '<tr>';
+      row.forEach((cell, index) => {
+        // Añadir atributo data-status a las celdas de estado para estilizarlas
+        if (index === 1) { // Columna Status
+          tableHTML += `<td data-status="${cell}">${cell}</td>`;
+        } else if (index === 8 && cell) { // Columna Requisition #(Corcentric ID)
+          // Crear enlace clickeable para el Corcentric ID
+          // Usar "REQUESTID" literal y Corcentric ID para el último número
+          const corcentricId = cell; // Requisition #(Corcentric ID)
+          const url = `https://valeo.determine.com/t/ui/md/REQUESTID/item/${corcentricId}`;
+          tableHTML += `<td><a href="${url}" target="_blank" class="corcentric-link">${cell}</a></td>`;
+        } else {
+          tableHTML += `<td>${cell}</td>`;
+        }
+      });
+      tableHTML += '</tr>';
+    });
+    tableHTML += '</tbody></table>';
     
-  } catch (error) {
-    console.error('Error inicializando aplicación:', error);
-    showNotification('Error inicializando la aplicación', 'error');
+    // Insertar tabla
+    tableContainer.innerHTML = tableHTML;
     
-    // Intentar configurar funcionalidad básica
-    if (initializeDOM()) {
-      setupEventListeners();
-    }
+    // Mostrar sección de tabla
+    tableSection.style.display = 'block';
+    
+    // Scroll a la tabla
+    tableSection.scrollIntoView({ behavior: 'smooth' });
   }
-}
-
-// === ESTILOS DE NOTIFICACIONES ===
-function addNotificationStyles() {
-  const styles = `
-    .notification {
-      position: fixed;
-      top: 20px;
-      right: 20px;
-      background: white;
-      border-radius: 8px;
-      padding: 16px 20px;
-      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-      z-index: 1000;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-      min-width: 300px;
-      opacity: 0;
-      transform: translateX(100%);
-      animation: slideInRight 0.3s ease forwards;
-      border-left: 4px solid #2563eb;
-    }
-    
-    .notification-success { border-left-color: #10b981; }
-    .notification-error { border-left-color: #ef4444; }
-    
-    .notification-success i { color: #10b981; }
-    .notification-error i { color: #ef4444; }
-    .notification i { color: #2563eb; }
-    
-    .notification.fade-out {
-      animation: slideOutRight 0.3s ease forwards;
-    }
-    
-    @keyframes slideInRight {
-      to {
-        opacity: 1;
-        transform: translateX(0);
+  
+  function deleteReport(reportId) {
+    if (confirm('¿Estás seguro de que deseas eliminar este reporte?')) {
+      // En un entorno real, enviaríamos la solicitud al servidor
+      /*
+      fetch(`/api/delete-report/${reportId}`, {
+        method: 'DELETE'
+      })
+      .then(response => {
+        if (response.ok) {
+          loadReportsFromServer();
+        } else {
+          throw new Error('Error al eliminar el reporte');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('No se pudo eliminar el reporte. Por favor, inténtalo de nuevo.');
+      });
+      */
+      
+      // Simulación (eliminar en implementación real)
+      reports = reports.filter(report => report.id !== reportId);
+      localStorage.setItem('csvReports', JSON.stringify(reports));
+      renderReportsList();
+      
+      // Si la tabla del reporte está abierta, cerrarla
+      if (tableSection.style.display !== 'none') {
+        closeTable();
       }
     }
-    
-    @keyframes slideOutRight {
-      to {
-        opacity: 0;
-        transform: translateX(100%);
-      }
-    }
-  `;
-  
-  const styleSheet = document.createElement('style');
-  styleSheet.textContent = styles;
-  document.head.appendChild(styleSheet);
-}
-
-// === INICIO ===
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', () => {
-    addNotificationStyles();
-    // Solo inicializar la app si NO estamos en screenshots.html
-    if (!window.location.pathname.endsWith('screenshots.html')) {
-      initializeApplication();
-    } else {
-      // Solo inicializar la base de datos para capturas
-      initDB();
-    }
-  });
-} else {
-  addNotificationStyles();
-  if (!window.location.pathname.endsWith('screenshots.html')) {
-    initializeApplication();
-  } else {
-    initDB();
   }
-}
-
-// Exponer funciones globales para uso en HTML
-window.downloadReport = downloadReport;
-window.deleteReport = deleteReport;
-window.openReport = openReport;
-// window.addScreenshot = addScreenshot; // Eliminada - funcionalidad integrada en viewScreenshots
-window.viewScreenshots = viewScreenshots;
-
-
-
+  
+  function deleteAllReports() {
+    if (reports.length === 0) return;
+    
+    if (confirm('¿Estás seguro de que deseas eliminar todos los reportes?')) {
+      // En un entorno real, enviaríamos la solicitud al servidor
+      /*
+      fetch('/api/delete-all-reports', {
+        method: 'DELETE'
+      })
+      .then(response => {
+        if (response.ok) {
+          loadReportsFromServer();
+        } else {
+          throw new Error('Error al eliminar los reportes');
+        }
+      })
+      .catch(error => {
+        console.error('Error:', error);
+        alert('No se pudieron eliminar los reportes. Por favor, inténtalo de nuevo.');
+      });
+      */
+      
+      // Simulación (eliminar en implementación real)
+      reports = [];
+      localStorage.removeItem('csvReports'); // Limpiar completamente
+      renderReportsList();
+      closeTable();
+    }
+  }
+  
+  function refreshReports() {
+    loadReportsFromServer();
+  }
+  
+  function closeTable() {
+    tableSection.style.display = 'none';
+  }
+  
+  function printTable() {
+    window.print();
+  }
+  
+  // Exponer funciones al ámbito global para los onclick del HTML
+  window.closeTable = closeTable;
+  window.printTable = printTable;
+});

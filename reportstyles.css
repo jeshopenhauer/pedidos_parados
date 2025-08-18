@@ -1,0 +1,264 @@
+function getReportStyles() {
+  return `
+    body { 
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; 
+      margin: 0; 
+      padding: 20px; 
+      background: #e3f2fd;
+      min-height: 100vh;
+    }
+    
+    .container {
+      max-width: 1200px;
+      margin: 0 auto;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 12px;
+      padding: 30px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+    
+    .header { 
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      text-align: left;
+      margin-bottom: 30px; 
+      padding-bottom: 20px;
+      border-bottom: 2px solid #e2e8f0;
+    }
+    
+    .header h1 { 
+      margin: 0; 
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: #1565c0; 
+      font-size: 2.2rem;
+      font-weight: 700;
+    }
+    
+    .header .meta { 
+      color: #546e7a; 
+      font-size: 1.1rem;
+      display: flex;
+      justify-content: center;
+      gap: 30px;
+      flex-wrap: wrap;
+    }
+    
+    .meta-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .meta-item i {
+      color: #1976d2;
+    }
+    
+    .csv-table { 
+      width: 100%; 
+      border-collapse: collapse; 
+      margin-top: 20px;
+      background: white;
+      border-radius: 8px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      border: 1px solid #e0e7ff;
+    }
+    
+    .csv-table th { 
+      background: #f8fafc; 
+      color: #374151; 
+      padding: 12px 16px; 
+      text-align: left; 
+      font-weight: 600;
+      font-size: 0.875rem;
+      border-bottom: 2px solid #e5e7eb;
+    }
+    
+    .csv-table td { 
+      padding: 12px 16px; 
+      border-bottom: 1px solid #f3f4f6; 
+      font-size: 0.875rem;
+      vertical-align: middle;
+    }
+    
+    .csv-table tbody tr:hover { 
+      background-color: #f8fafc; 
+    }
+    
+    .csv-table tbody tr:nth-child(odd) {
+      background-color: #ffffff;
+    }
+    
+    .csv-table tbody tr:nth-child(even) {
+      background-color: #f9fafb;
+    }
+    
+    .status-info-needed {
+      background-color: #2196f3 !important;
+      color: white !important;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 4px;
+      padding: 8px 12px !important;
+    }
+    
+    .currency-cell {
+      text-align: right !important;
+      font-weight: 600;
+      color: #059669 !important;
+      background-color: #f0fdf4 !important;
+      font-family: 'Courier New', monospace;
+    }
+    
+    .screenshot-actions {
+      display: flex;
+      gap: 5px;
+      justify-content: center;
+    }
+    
+    .action-btn {
+      background: #f8fafc;
+      border: 1px solid #e2e8f0;
+      border-radius: 6px;
+      padding: 6px 8px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-size: 0.75rem;
+    }
+    
+    .action-btn:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    /* Modal para notas */
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 10000;
+      left: 0;
+      top: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: auto;
+      background-color: rgba(0,0,0,0.25);
+    }
+    .modal-content {
+      background-color: #fff;
+      margin: 5% auto;
+      padding: 24px 32px;
+      border: 1px solid #e5e7eb;
+      border-radius: 12px;
+      max-width: 500px;
+      box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+      position: relative;
+    }
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .modal-header h2 {
+      margin: 0;
+      font-size: 1.3em;
+      color: #2563eb;
+    }
+    .modal-header .close {
+      font-size: 1.5em;
+      cursor: pointer;
+      color: #64748b;
+      transition: color 0.2s;
+    }
+    .modal-header .close:hover {
+      color: #ef4444;
+    }
+    .form-group label {
+      font-weight: 500;
+      color: #374151;
+    }
+    .form-group textarea {
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      padding: 8px;
+      font-size: 1em;
+      font-family: inherit;
+      background: #f8fafc;
+      color: #374151;
+    }
+    .btn {
+      padding: 6px 16px;
+      border-radius: 6px;
+      border: 1px solid #e5e7eb;
+      background: #f8fafc;
+      color: #2563eb;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+    }
+    .btn-secondary {
+      background: #e5e7eb;
+      color: #374151;
+    }
+    .btn:hover {
+      background: #2563eb;
+      color: #fff;
+    }
+    
+    /* Botón Valeo en el título */
+    #btn-valeo {
+      background: #22c55e;
+      color: #fff;
+      padding: 4px 10px;
+      border-radius: 6px;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+      font-size: 0.85em;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 10px;
+    }
+    #btn-valeo i {
+      font-size: 0.9em;
+    }
+    
+    @media (max-width: 768px) {
+      .container {
+        margin: 10px;
+        padding: 20px;
+      }
+      
+      .header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+      
+      .header h1 {
+        font-size: 1.3rem;
+        gap: 6px;
+      }
+      
+      #btn-valeo {
+        font-size: 0.8em;
+        padding: 3px 8px;
+      }
+      
+      .csv-table {
+        font-size: 0.8rem;
+      }
+      
+      .csv-table th,
+      .csv-table td {
+        padding: 8px 6px;
+      }
+    }
+  `;
+}
+
