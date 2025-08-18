@@ -36,10 +36,9 @@ class SupabaseReportManager {
         .from('reports')
         .insert([{
           name: report.name,
-          fileName: report.fileName,
-          headers: report.headers,
-          data: report.data,
-          recordCount: report.recordCount
+          headers: JSON.stringify(report.headers),
+          data: JSON.stringify(report.data),
+          record_count: report.recordCount || 0
         }]);
       
       if (error) throw error;
@@ -68,7 +67,15 @@ class SupabaseReportManager {
       
       if (error) throw error;
       
-      return data;
+      // Procesar los datos JSON
+      const processedData = data.map(report => ({
+        ...report,
+        headers: typeof report.headers === 'string' ? JSON.parse(report.headers) : report.headers,
+        data: typeof report.data === 'string' ? JSON.parse(report.data) : report.data,
+        recordCount: report.record_count || 0
+      }));
+      
+      return processedData;
     } catch (error) {
       console.error('Error obteniendo reportes:', error);
       throw error;
@@ -78,6 +85,10 @@ class SupabaseReportManager {
   // Eliminar un reporte
   static async deleteReport(reportId) {
     try {
+      if (!supabaseClient) {
+        throw new Error('Supabase client not initialized');
+      }
+      
       const { error } = await supabaseClient
         .from('reports')
         .delete()
