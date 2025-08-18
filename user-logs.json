@@ -1,6 +1,6 @@
 [
   {
-    "timestamp": "2025-08-18T13:56:59.178Z",
+    "timestamp": "2025-08-18T14:01:01.116Z",
     "ip": "10.252.15.122",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
     "url": "/api/reports",
@@ -10,7 +10,7 @@
     "host": "10.252.15.122:3001"
   },
   {
-    "timestamp": "2025-08-18T13:56:59.242Z",
+    "timestamp": "2025-08-18T14:01:01.120Z",
     "ip": "10.252.15.122",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
     "url": "/api/user-stats",
@@ -20,7 +20,17 @@
     "host": "10.252.15.122:3001"
   },
   {
-    "timestamp": "2025-08-18T13:57:27.270Z",
+    "timestamp": "2025-08-18T14:01:01.130Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/user-stats",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:05.196Z",
     "ip": "10.252.15.122",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
     "url": "/api/reports",
@@ -30,7 +40,7 @@
     "host": "10.252.15.122:3001"
   },
   {
-    "timestamp": "2025-08-18T13:58:27.268Z",
+    "timestamp": "2025-08-18T14:01:06.726Z",
     "ip": "10.252.15.122",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
     "url": "/api/reports",
@@ -40,7 +50,617 @@
     "host": "10.252.15.122:3001"
   },
   {
-    "timestamp": "2025-08-18T13:59:27.277Z",
+    "timestamp": "2025-08-18T14:01:11.728Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:16.727Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:19.720Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/user-stats",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:21.728Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:26.727Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:27.032Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/user-stats",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:27.277Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:28.361Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/user-stats",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:31.729Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:36.729Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:41.730Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:46.728Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:51.729Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:01:56.732Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:01.731Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:06.731Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:11.729Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:16.732Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:21.731Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:26.730Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:27.272Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:31.730Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:36.730Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:41.730Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:46.734Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:51.730Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:56.731Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:02:59.530Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:04.530Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:09.533Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:14.529Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:19.017Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/user-stats",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:19.529Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:19.533Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/user-stats",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:24.530Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:27.270Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:29.523Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:34.536Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:39.518Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:44.522Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:49.531Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:54.530Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:03:59.530Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:04.530Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:09.530Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:15.294Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:20.772Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:25.275Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:27.276Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:30.271Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:35.271Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:40.266Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:45.264Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:50.272Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:04:55.272Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:05:00.262Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:05:05.265Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:05:10.269Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:05:27.278Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:05:27.284Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:06:27.265Z",
+    "ip": "10.252.15.122",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://10.252.15.122:3001/",
+    "acceptLanguage": "es,es-ES;q=0.9,en;q=0.8,en-GB;q=0.7,en-US;q=0.6",
+    "host": "10.252.15.122:3001"
+  },
+  {
+    "timestamp": "2025-08-18T14:06:27.272Z",
     "ip": "10.252.15.122",
     "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/139.0.0.0 Safari/537.36 Edg/139.0.0.0",
     "url": "/api/reports",

@@ -17,110 +17,97 @@
           Pedidos Parados
         </h1>
         <!-- Indicador de Rol -->
-        <div class="role-indicator" onclick="requestAdminAccess()" style="cursor: pointer;" title="Hacer clic para acceder al modo administrador">
-          <div id="roleStatus" class="status-dot detecting"></div>
-          <span id="roleText" class="role-text">Detectando...</span>
+        <div class="header-controls">
+          <div class="role-indicator" onclick="requestAdminAccess()" style="cursor: pointer;" title="Hacer clic para acceder al modo administrador">
+            <div id="roleStatus" class="status-dot detecting"></div>
+            <span id="roleText" class="role-text">Detectando...</span>
+          </div>
+          
+          <!-- Botón de importar CSV (solo admin) -->
+          <div class="import-controls admin-only">
+            <input type="file" id="csvInput" accept=".csv" class="file-input-hidden" />
+            <button class="import-btn" onclick="triggerFileInput()" title="Importar archivo CSV">
+              <i class="fas fa-file-csv"></i>
+              <span>Importar CSV</span>
+            </button>
+          </div>
         </div>
       </div>
     </header>
 
     <main class="main-content">
-      <!-- Panel para importar CSV -->
-      <section class="upload-section" id="uploadSection">
-        <div class="upload-card">
-          <div class="upload-icon">
-            <i class="fas fa-cloud-upload-alt"></i>
-          </div>
-          <h2 class="upload-title">Importar Archivo CSV</h2>
-          
-          <div class="file-input-wrapper">
-            <input type="file" id="csvInput" accept=".csv" class="file-input" />
-            <label for="csvInput" class="file-input-label">
-              <i class="fas fa-plus"></i>
-              Seleccionar Archivo
-            </label>
-          </div>
-          
-          <div class="upload-info">
-            <div class="info-item">
-              <i class="fas fa-info-circle"></i>
-              <span>Formato soportado: archivos .csv</span>
-            </div>
-            <div class="info-item">
-              <i class="fas fa-filter"></i>
-              <span>Filtrado automático: 6 columnas principales</span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <!-- Panel para gestionar reportes -->
-      <section class="reports-section">
-        <div class="reports-card">
-          <div class="reports-header">
-            <div class="reports-title-group">
-              <h2 class="reports-title">
-                <i class="fas fa-chart-line"></i>
-                Mis Reportes
-              </h2>
-              <span class="reports-count" id="reportsCount">0 reportes</span>
-            </div>
-            <div class="reports-actions">
-              <button class="action-btn refresh-btn" title="Actualizar">
-                <i class="fas fa-sync-alt"></i>
-              </button>
-              <button class="action-btn delete-btn admin-only" title="Eliminar Todos">
-                <i class="fas fa-trash-alt"></i>
-              </button>
-            </div>
-          </div>
-          
-          <div class="reports-content">
-            <div id="reportsList" class="reports-list">
-              <!-- Las entradas de reportes serán generadas dinámicamente -->
-              <div class="empty-state">
-                <div class="empty-state-icon">
-                  <i class="fas fa-inbox"></i>
+      <!-- Contenedor para reportes y monitoreo lado a lado -->
+      <section class="dashboard-section">
+        <div class="dashboard-grid">
+          <!-- Panel para gestionar reportes -->
+          <div class="reports-panel">
+            <div class="reports-card">
+              <div class="reports-header">
+                <div class="reports-title-group">
+                  <h2 class="reports-title">
+                    <i class="fas fa-chart-line"></i>
+                    Mis Reportes
+                  </h2>
+                  <span class="reports-count" id="reportsCount">0 reportes</span>
                 </div>
-                <h3 class="empty-state-title">No hay reportes aún</h3>
-                <p class="empty-state-description">Sube un archivo CSV para comenzar</p>
+                <div class="reports-actions">
+                  <button class="action-btn refresh-btn" title="Actualizar">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                  <button class="action-btn delete-btn admin-only" title="Eliminar Todos">
+                    <i class="fas fa-trash-alt"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="reports-content">
+                <div id="reportsList" class="reports-list">
+                  <!-- Las entradas de reportes serán generadas dinámicamente -->
+                  <div class="empty-state">
+                    <div class="empty-state-icon">
+                      <i class="fas fa-inbox"></i>
+                    </div>
+                    <h3 class="empty-state-title">No hay reportes aún</h3>
+                    <p class="empty-state-description">Sube un archivo CSV para comenzar</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
-        </div>
-      </section>
 
-      <!-- Panel de monitoreo de usuarios (solo admin) -->
-      <section class="user-monitoring-section admin-only" id="userMonitoringSection">
-        <div class="monitoring-card">
-          <div class="monitoring-header" onclick="toggleUserMonitoring()" style="cursor: pointer;">
-            <div class="monitoring-title-group">
-              <h2 class="monitoring-title">
-                <i class="fas fa-users"></i>
-                Monitoreo de Usuarios
-                <i class="fas fa-chevron-down collapse-icon" id="monitoringCollapseIcon"></i>
-              </h2>
-              <span class="users-count" id="usersCount">0 usuarios</span>
-            </div>
-            <div class="monitoring-actions" onclick="event.stopPropagation()">
-              <button class="action-btn refresh-users-btn" title="Actualizar Usuarios">
-                <i class="fas fa-sync-alt"></i>
-              </button>
-              <button class="action-btn clear-logs-btn" title="Limpiar Logs">
-                <i class="fas fa-trash"></i>
-              </button>
-            </div>
-          </div>
-          
-          <div class="monitoring-content" id="monitoringContent" style="display: none;">
-            <div id="usersList" class="users-list">
-              <!-- Las entradas de usuarios serán generadas dinámicamente -->
-              <div class="empty-state">
-                <div class="empty-state-icon">
-                  <i class="fas fa-user-clock"></i>
+          <!-- Panel de monitoreo de usuarios (solo admin) -->
+          <div class="monitoring-panel admin-only" id="userMonitoringSection">
+            <div class="monitoring-card">
+              <div class="monitoring-header" onclick="toggleUserMonitoring()" style="cursor: pointer;">
+                <div class="monitoring-title-group">
+                  <h2 class="monitoring-title">
+                    <i class="fas fa-users"></i>
+                    Monitoreo de Usuarios
+                    <i class="fas fa-chevron-down collapse-icon" id="monitoringCollapseIcon"></i>
+                  </h2>
+                  <span class="users-count" id="usersCount">0 usuarios</span>
                 </div>
-                <h3 class="empty-state-title">No hay datos de usuarios aún</h3>
-                <p class="empty-state-description">Los usuarios aparecerán conforme accedan al sistema</p>
+                <div class="monitoring-actions" onclick="event.stopPropagation()">
+                  <button class="action-btn refresh-users-btn" title="Actualizar Usuarios">
+                    <i class="fas fa-sync-alt"></i>
+                  </button>
+                  <button class="action-btn clear-logs-btn" title="Limpiar Logs">
+                    <i class="fas fa-trash"></i>
+                  </button>
+                </div>
+              </div>
+              
+              <div class="monitoring-content" id="monitoringContent" style="display: none;">
+                <div id="usersList" class="users-list">
+                  <!-- Las entradas de usuarios serán generadas dinámicamente -->
+                  <div class="empty-state">
+                    <div class="empty-state-icon">
+                      <i class="fas fa-user-clock"></i>
+                    </div>
+                    <h3 class="empty-state-title">No hay datos de usuarios aún</h3>
+                    <p class="empty-state-description">Los usuarios aparecerán conforme accedan al sistema</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>

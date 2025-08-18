@@ -542,6 +542,19 @@ document.addEventListener('DOMContentLoaded', function() {
     return { browser, os };
   }
   
+  // Función para activar el input de archivo
+  function triggerFileInput() {
+    if (!isAdmin) {
+      alert('No tienes permisos para importar archivos. Activa el modo administrador primero.');
+      return;
+    }
+    
+    const csvInput = document.getElementById('csvInput');
+    if (csvInput) {
+      csvInput.click();
+    }
+  }
+  
   // Función para alternar la visibilidad del panel de monitoreo
   function toggleUserMonitoring() {
     const content = document.getElementById('monitoringContent');
@@ -653,4 +666,5 @@ document.addEventListener('DOMContentLoaded', function() {
   window.loadReportsFromServer = loadReportsFromServer;
   window.requestAdminAccess = requestAdminAccess;
   window.toggleUserMonitoring = toggleUserMonitoring;
+  window.triggerFileInput = triggerFileInput;
 });

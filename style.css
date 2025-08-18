@@ -57,6 +57,12 @@ body {
   padding: 0 20px;
 }
 
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
 .header-title {
   color: var(--primary-color);
   font-size: 2.5rem;
@@ -155,6 +161,46 @@ body {
 
 .role-text.viewer {
   color: var(--danger-color);
+}
+
+/* === CONTROLES DE IMPORTACIÓN === */
+.import-controls {
+  display: flex;
+  align-items: center;
+}
+
+.file-input-hidden {
+  display: none;
+}
+
+.import-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 16px;
+  background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+  color: white;
+  border: none;
+  border-radius: 25px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: var(--transition);
+  box-shadow: 0 2px 8px rgba(67, 97, 238, 0.3);
+}
+
+.import-btn:hover {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(67, 97, 238, 0.4);
+}
+
+.import-btn:active {
+  transform: translateY(0);
+}
+
+.import-btn i {
+  font-size: 1rem;
 }
 
 /* === ELEMENTOS SOLO PARA ADMIN === */
@@ -1068,6 +1114,26 @@ td:nth-child(3) {
 }
 
 /* === MONITOREO DE USUARIOS === */
+.dashboard-section {
+  margin-top: 0;
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 30px;
+  align-items: start;
+}
+
+.reports-panel {
+  min-width: 0; /* Permite que el contenido se encoja */
+}
+
+.monitoring-panel {
+  min-width: 300px;
+  max-width: 500px;
+}
+
 .user-monitoring-section {
   margin-top: 30px;
 }
@@ -1134,16 +1200,17 @@ td:nth-child(3) {
 
 .users-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
-  gap: 20px;
+  grid-template-columns: 1fr;
+  gap: 15px;
 }
 
 .user-card {
   background: #f8f9fa;
   border-radius: var(--border-radius);
-  padding: 15px;
+  padding: 12px;
   border-left: 4px solid var(--gray-color);
   transition: var(--transition);
+  font-size: 0.9rem;
 }
 
 .user-card.online {
@@ -1258,6 +1325,22 @@ td:nth-child(3) {
 }
 
 /* Responsive para la grid de usuarios */
+@media (max-width: 1200px) {
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+  
+  .monitoring-panel {
+    max-width: none;
+  }
+  
+  .users-grid {
+    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    gap: 20px;
+  }
+}
+
 @media (max-width: 768px) {
   .users-grid {
     grid-template-columns: 1fr;
@@ -1273,6 +1356,21 @@ td:nth-child(3) {
     flex-direction: column;
     gap: 15px;
     text-align: center;
+  }
+  
+  .header-content {
+    flex-direction: column;
+    gap: 15px;
+    text-align: center;
+  }
+  
+  .header-controls {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .import-btn span {
+    display: none;
   }
 }
 
