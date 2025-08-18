@@ -6,8 +6,19 @@
 const SUPABASE_URL = 'https://jyhgslhndkwmawzkawni.supabase.co'; // Reemplaza con tu URL
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5aGdzbGhuZGt3bWF3emthd25pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEwNTUsImV4cCI6MjA3MTA4NzA1NX0.19RtsJxGGrSzLiD8GL0jwHpd-vj8rNhLEx03eG5AcLQ'; // Reemplaza con tu API Key anon
 
+// Verificar que Supabase esté disponible
+if (!window.supabase) {
+  console.error('Supabase library not loaded');
+}
+
 // Inicializar cliente de Supabase
-const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+let supabaseClient;
+try {
+  supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log('Supabase client initialized successfully');
+} catch (error) {
+  console.error('Error initializing Supabase client:', error);
+}
 
 // Funciones para manejar reportes en Supabase
 class SupabaseReportManager {
@@ -15,6 +26,12 @@ class SupabaseReportManager {
   // Guardar reporte en Supabase
   static async saveReport(report) {
     try {
+      if (!supabaseClient) {
+        throw new Error('Supabase client not initialized');
+      }
+      
+      console.log('Saving report to Supabase:', report.name);
+      
       const { data, error } = await supabaseClient
         .from('reports')
         .insert([{
@@ -38,6 +55,12 @@ class SupabaseReportManager {
   // Obtener todos los reportes
   static async getAllReports() {
     try {
+      if (!supabaseClient) {
+        throw new Error('Supabase client not initialized');
+      }
+      
+      console.log('Fetching reports from Supabase');
+      
       const { data, error } = await supabaseClient
         .from('reports')
         .select('*')
