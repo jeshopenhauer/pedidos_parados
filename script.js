@@ -18,17 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('.refresh-btn').addEventListener('click', refreshReports);
   document.querySelector('.delete-btn').addEventListener('click', deleteAllReports);
   
-  // Cargar reportes desde Supabase con fallback
-  loadReportsWithFallback();
-  
-  async function loadReportsWithFallback() {
-    try {
-      await loadReportsFromSupabase();
-    } catch (error) {
-      console.warn('Supabase not available, using localStorage:', error);
-      await loadReportsFromLocalStorage();
-    }
-  }
+  // Cargar reportes desde Supabase (solo multiusuario)
+  loadReportsFromSupabase();
   
   // Funciones principales
   function handleFileUpload(event) {
@@ -158,24 +149,16 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       showLoading('Guardando reporte...');
       
-      // Intentar guardar en Supabase primero
-      try {
-        await SupabaseReportManager.saveReport(report);
-        console.log('Report saved to Supabase successfully');
-        await loadReportsFromSupabase();
-      } catch (supabaseError) {
-        console.warn('Supabase failed, using localStorage fallback:', supabaseError);
-        
-        // Fallback a localStorage
-        await LocalReportManager.saveReport(report);
-        await loadReportsFromLocalStorage();
-        
-        showError('Guardado en modo local (Supabase no disponible)');
-      }
+      // Guardar en Supabase para acceso multiusuario
+      await SupabaseReportManager.saveReport(report);
+      console.log('Report saved to Supabase successfully');
+      
+      // Recargar reportes después de guardar
+      await loadReportsFromSupabase();
       
     } catch (error) {
       console.error('Error guardando reporte:', error);
-      showError('Error al guardar el reporte. Por favor, inténtalo de nuevo.');
+      showError('Error al guardar el reporte. Verifica tu conexión a internet.');
     }
   }
   

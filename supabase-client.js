@@ -1,40 +1,11 @@
 // Configuración de Supabase
-// PASO 1: Ve a Settings > API en tu proyecto de Supabase
-// PASO 2: Copia la URL del proyecto y la API Key (anon, public)
-// PASO 3: Reemplaza las siguientes líneas:
-
-const SUPABASE_URL = 'https://jyhgslhndkwmawzkawni.supabase.co'; // Reemplaza con tu URL
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5aGdzbGhuZGt3bWF3emthd25pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEwNTUsImV4cCI6MjA3MTA4NzA1NX0.19RtsJxGGrSzLiD8GL0jwHpd-vj8rNhLEx03eG5AcLQ'; // Reemplaza con tu API Key anon
-
-// Verificar configuración
-console.log('Supabase URL:', SUPABASE_URL);
-console.log('API Key length:', SUPABASE_ANON_KEY.length);
-console.log('Window supabase available:', !!window.supabase);
-
-// Verificar que Supabase esté disponible
-if (!window.supabase) {
-  console.error('Supabase library not loaded');
-} else {
-  console.log('Supabase library loaded successfully');
-  console.log('createClient function available:', typeof window.supabase.createClient);
-}
+const SUPABASE_URL = 'https://jyhgslhndkwmawzkawni.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5aGdzbGhuZGt3bWF3emthd25pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEwNTUsImV4cCI6MjA3MTA4NzA1NX0.19RtsJxGGrSzLiD8GL0jwHpd-vj8rNhLEx03eG5AcLQ';
 
 // Inicializar cliente de Supabase
-let supabaseClient;
-try {
-  if (window.supabase && window.supabase.createClient) {
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-    console.log('Supabase client initialized successfully:', !!supabaseClient);
-    console.log('Client config:', {
-      supabaseUrl: supabaseClient.supabaseUrl,
-      supabaseKey: supabaseClient.supabaseKey ? '[KEY_SET]' : '[NO_KEY]'
-    });
-  } else {
-    throw new Error('Supabase createClient function not available');
-  }
-} catch (error) {
-  console.error('Error initializing Supabase client:', error);
-}
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+console.log('Supabase client initialized for multiuser app');
 
 // Funciones para manejar reportes en Supabase
 class SupabaseReportManager {
