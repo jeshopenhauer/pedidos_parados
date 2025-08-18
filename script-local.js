@@ -40,7 +40,6 @@ document.addEventListener('DOMContentLoaded', function() {
     const roleStatus = document.getElementById('roleStatus');
     const roleText = document.getElementById('roleText');
     const uploadSection = document.getElementById('uploadSection');
-    const viewOnlyMessage = document.getElementById('viewOnlyMessage');
     
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
       // Usuario administrador (acceso local)
@@ -50,7 +49,6 @@ document.addEventListener('DOMContentLoaded', function() {
       roleText.className = 'role-text admin';
       
       if (uploadSection) uploadSection.style.display = 'block';
-      if (viewOnlyMessage) viewOnlyMessage.style.display = 'none';
       
       document.body.classList.remove('viewer-mode');
       
@@ -62,7 +60,6 @@ document.addEventListener('DOMContentLoaded', function() {
       roleText.className = 'role-text viewer';
       
       if (uploadSection) uploadSection.style.display = 'none';
-      if (viewOnlyMessage) viewOnlyMessage.style.display = 'block';
       
       document.body.classList.add('viewer-mode');
     }
