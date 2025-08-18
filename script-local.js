@@ -12,20 +12,69 @@ document.addEventListener('DOMContentLoaded', function() {
   
   // Estado de la aplicación
   let reports = [];
+  let isAdmin = false;
+  
+  // Detectar rol del usuario y configurar interfaz
+  detectUserRole();
   
   // Event Listeners
-  csvInput.addEventListener('change', handleFileUpload);
+  if (csvInput) {
+    csvInput.addEventListener('change', handleFileUpload);
+  }
   document.querySelector('.refresh-btn').addEventListener('click', refreshReports);
-  document.querySelector('.delete-btn').addEventListener('click', deleteAllReports);
+  
+  const deleteBtn = document.querySelector('.delete-btn');
+  if (deleteBtn) {
+    deleteBtn.addEventListener('click', deleteAllReports);
+  }
   
   // Cargar reportes desde el servidor
   loadReportsFromServer();
   
-  // Polling para actualizar reportes cada 5 segundos (para multiusuario)
+  // Polling para actualizar reportes cada 5 segundos
   setInterval(loadReportsFromServer, 5000);
+  
+  // Función para detectar si es administrador o usuario de solo visualización
+  function detectUserRole() {
+    const hostname = window.location.hostname;
+    const roleStatus = document.getElementById('roleStatus');
+    const roleText = document.getElementById('roleText');
+    const uploadSection = document.getElementById('uploadSection');
+    const viewOnlyMessage = document.getElementById('viewOnlyMessage');
+    
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      // Usuario administrador (acceso local)
+      isAdmin = true;
+      roleStatus.className = 'status-dot admin';
+      roleText.textContent = 'Administrador';
+      roleText.className = 'role-text admin';
+      
+      if (uploadSection) uploadSection.style.display = 'block';
+      if (viewOnlyMessage) viewOnlyMessage.style.display = 'none';
+      
+      document.body.classList.remove('viewer-mode');
+      
+    } else {
+      // Usuario de solo visualización (acceso por IP de red)
+      isAdmin = false;
+      roleStatus.className = 'status-dot viewer';
+      roleText.textContent = 'Solo Visualización';
+      roleText.className = 'role-text viewer';
+      
+      if (uploadSection) uploadSection.style.display = 'none';
+      if (viewOnlyMessage) viewOnlyMessage.style.display = 'block';
+      
+      document.body.classList.add('viewer-mode');
+    }
+  }
   
   // Funciones principales
   function handleFileUpload(event) {
+    if (!isAdmin) {
+      alert('No tienes permisos para subir archivos. Solo puedes visualizar reportes.');
+      return;
+    }
+    
     const file = event.target.files[0];
     if (!file) return;
     
@@ -136,7 +185,7 @@ document.addEventListener('DOMContentLoaded', function() {
           </div>
         </div>
         <div class="report-actions">
-          <button class="action-btn delete-report-btn" title="Eliminar">
+          <button class="action-btn delete-report-btn admin-only" title="Eliminar">
             <i class="fas fa-trash"></i>
           </button>
         </div>
@@ -214,6 +263,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   async function deleteReport(reportId) {
+    if (!isAdmin) {
+      alert('No tienes permisos para eliminar reportes. Solo puedes visualizar.');
+      return;
+    }
+    
     if (confirm('¿Estás seguro de que deseas eliminar este reporte?')) {
       try {
         showLoading('Eliminando reporte...');
@@ -233,7 +287,7 @@ document.addEventListener('DOMContentLoaded', function() {
           await loadReportsFromServer();
           
           // Si la tabla del reporte está abierta, cerrarla
-          if (tableSection.style.display !== 'none') {
+          if (tableSection && tableSection.style.display !== 'none') {
             closeTable();
           }
           
@@ -250,6 +304,11 @@ document.addEventListener('DOMContentLoaded', function() {
   }
   
   async function deleteAllReports() {
+    if (!isAdmin) {
+      alert('No tienes permisos para eliminar reportes. Solo puedes visualizar.');
+      return;
+    }
+    
     if (reports.length === 0) return;
     
     if (confirm('¿Estás seguro de que deseas eliminar todos los reportes?')) {

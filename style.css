@@ -50,6 +50,158 @@ body {
 
 .header-content {
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+.header-title {
+  color: var(--primary-color);
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.header-title i {
+  color: var(--secondary-color);
+}
+
+/* === INDICADOR DE ROL === */
+.role-indicator {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  background: white;
+  border-radius: 50px;
+  box-shadow: var(--box-shadow);
+  border: 2px solid #e5e7eb;
+}
+
+.status-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.status-dot::after {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border-radius: 50%;
+  opacity: 0.3;
+  animation: pulse-ring 2s infinite;
+}
+
+.status-dot.admin {
+  background-color: var(--success-color);
+}
+
+.status-dot.admin::after {
+  background-color: var(--success-color);
+}
+
+.status-dot.viewer {
+  background-color: var(--danger-color);
+}
+
+.status-dot.viewer::after {
+  background-color: var(--danger-color);
+}
+
+.status-dot.detecting {
+  background-color: var(--warning-color);
+}
+
+.status-dot.detecting::after {
+  background-color: var(--warning-color);
+}
+
+@keyframes pulse-ring {
+  0% {
+    transform: scale(0.8);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 0.1;
+  }
+  100% {
+    transform: scale(0.8);
+    opacity: 0.3;
+  }
+}
+
+.role-text {
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--dark-color);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.role-text.admin {
+  color: var(--success-color);
+}
+
+.role-text.viewer {
+  color: var(--danger-color);
+}
+
+/* === SECCIÓN SOLO VISUALIZACIÓN === */
+.view-only-section {
+  margin-bottom: 30px;
+}
+
+.view-only-card {
+  background: linear-gradient(135deg, #fef3c7 0%, #fed7aa 100%);
+  border: 2px solid var(--warning-color);
+  border-radius: var(--border-radius);
+  padding: 30px;
+  text-align: center;
+  animation: fadeInUp 0.6s ease-out;
+}
+
+.view-only-icon {
+  font-size: 3rem;
+  color: #d97706;
+  margin-bottom: 15px;
+}
+
+.view-only-title {
+  color: #92400e;
+  font-size: 1.5rem;
+  font-weight: 600;
+  margin: 0 0 15px 0;
+}
+
+.view-only-description {
+  color: #92400e;
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0;
+}
+
+/* === ELEMENTOS SOLO PARA ADMIN === */
+.viewer-mode .admin-only {
+  display: none !important;
+}
+
+.viewer-mode .upload-section {
+  display: none !important;
+}
+
+.header-content {
+  display: flex;
   align-items: center;
   justify-content: space-between;
 }

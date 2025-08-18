@@ -16,12 +16,30 @@
           <i class="fas fa-file-csv"></i>
           Pedidos Parados
         </h1>
+        <!-- Indicador de Rol -->
+        <div class="role-indicator">
+          <div id="roleStatus" class="status-dot detecting"></div>
+          <span id="roleText" class="role-text">Detectando...</span>
+        </div>
       </div>
     </header>
 
     <main class="main-content">
+      <!-- Mensaje para usuarios de solo visualización -->
+      <section id="viewOnlyMessage" class="view-only-section" style="display: none;">
+        <div class="view-only-card">
+          <div class="view-only-icon">
+            <i class="fas fa-eye"></i>
+          </div>
+          <h2 class="view-only-title">Modo Solo Visualización</h2>
+          <p class="view-only-description">
+            Estás conectado como usuario de visualización. Los reportes se actualizan automáticamente cada 5 segundos.
+          </p>
+        </div>
+      </section>
+
       <!-- Panel para importar CSV -->
-      <section class="upload-section">
+      <section class="upload-section" id="uploadSection">
         <div class="upload-card">
           <div class="upload-icon">
             <i class="fas fa-cloud-upload-alt"></i>
@@ -64,7 +82,7 @@
               <button class="action-btn refresh-btn" title="Actualizar">
                 <i class="fas fa-sync-alt"></i>
               </button>
-              <button class="action-btn delete-btn" title="Eliminar Todos">
+              <button class="action-btn delete-btn admin-only" title="Eliminar Todos">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </div>
