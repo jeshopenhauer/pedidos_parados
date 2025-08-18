@@ -66,12 +66,12 @@ echo ========================================
 echo   INFORMACION DEL SERVIDOR
 echo ========================================
 echo.
-echo Direccion local:   http://localhost:3000
+echo Direccion local:   http://localhost:3001
 if defined LOCAL_IP (
-    echo Direccion de red:  http://%LOCAL_IP%:3000
+    echo Direccion de red:  http://%LOCAL_IP%:3001
     echo.
     echo LINK PARA TU OFICINA:
-    echo    http://%LOCAL_IP%:3000
+    echo    http://%LOCAL_IP%:3001
 )
 echo.
 echo ========================================

@@ -4,12 +4,12 @@
 
 ### 🌐 **Link para tu oficina:**
 ```
-http://10.252.15.122:3000
+http://10.252.15.122:3001
 ```
 
 ### 💻 **Link para ti (local):**
 ```
-http://localhost:3000
+http://localhost:3001
 ```
 
 ---
@@ -84,7 +84,7 @@ pedidos_parados/
 
 ### **Para iniciar cada día:**
 1. Doble clic en `iniciar-servidor.bat`
-2. Compartir: `http://10.252.15.122:3000`
+2. Compartir: `http://10.252.15.122:3001`
 
 ### **Para detener:**
 - `Ctrl + C` en la ventana del servidor
@@ -95,7 +95,7 @@ pedidos_parados/
 
 ### **"No se puede conectar desde otros PCs"**
 - Verifica que están en la misma red WiFi
-- Usa exactamente esta IP: `10.252.15.122`
+- Usa exactamente esta IP: `10.252.15.122:3001`
 - Temporalmente desactiva el firewall de Windows
 
 ### **"El servidor no inicia"**
@@ -131,7 +131,7 @@ pedidos_parados/
 ✅ **Archivos limpiados y organizados**
 ✅ **README actualizado con instrucciones claras**
 ✅ **Script de inicio configurado para Node.js portátil**
-✅ **Link específico para tu oficina: `http://10.252.15.122:3000`**
+✅ **Link específico para tu oficina: `http://10.252.15.122:3001`**
 
 ### **Próximo paso:**
 Ejecuta `iniciar-servidor.bat` y comparte el link con tu equipo!
