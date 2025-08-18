@@ -18,8 +18,17 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('.refresh-btn').addEventListener('click', refreshReports);
   document.querySelector('.delete-btn').addEventListener('click', deleteAllReports);
   
-  // Cargar reportes desde Supabase
-  loadReportsFromSupabase();
+  // Cargar reportes desde Supabase con fallback
+  loadReportsWithFallback();
+  
+  async function loadReportsWithFallback() {
+    try {
+      await loadReportsFromSupabase();
+    } catch (error) {
+      console.warn('Supabase not available, using localStorage:', error);
+      await loadReportsFromLocalStorage();
+    }
+  }
   
   // Funciones principales
   function handleFileUpload(event) {
@@ -149,10 +158,20 @@ document.addEventListener('DOMContentLoaded', function() {
     try {
       showLoading('Guardando reporte...');
       
-      await SupabaseReportManager.saveReport(report);
-      
-      // Recargar reportes después de guardar
-      await loadReportsFromSupabase();
+      // Intentar guardar en Supabase primero
+      try {
+        await SupabaseReportManager.saveReport(report);
+        console.log('Report saved to Supabase successfully');
+        await loadReportsFromSupabase();
+      } catch (supabaseError) {
+        console.warn('Supabase failed, using localStorage fallback:', supabaseError);
+        
+        // Fallback a localStorage
+        await LocalReportManager.saveReport(report);
+        await loadReportsFromLocalStorage();
+        
+        showError('Guardado en modo local (Supabase no disponible)');
+      }
       
     } catch (error) {
       console.error('Error guardando reporte:', error);
@@ -173,6 +192,22 @@ document.addEventListener('DOMContentLoaded', function() {
     } catch (error) {
       console.error('Error cargando reportes:', error);
       showError('No se pudieron cargar los reportes desde el servidor');
+    }
+  }
+  
+  async function loadReportsFromLocalStorage() {
+    try {
+      showLoading('Cargando reportes...');
+      
+      const data = await LocalReportManager.getAllReports();
+      reports = data || [];
+      
+      renderReportsList();
+      updateReportsCount();
+      
+    } catch (error) {
+      console.error('Error cargando reportes desde localStorage:', error);
+      showError('No se pudieron cargar los reportes locales');
     }
   }
   

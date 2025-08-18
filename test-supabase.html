@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Supabase Connection Test</title>
+  <script src="https://unpkg.com/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+</head>
+<body>
+  <h1>Supabase Connection Test</h1>
+  <button onclick="testConnection()">Test Connection</button>
+  <div id="result"></div>
+  
+  <script>
+    const SUPABASE_URL = 'https://jyhgslhndkwmawzkawni.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5aGdzbGhuZGt3bWF3emthd25pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEwNTUsImV4cCI6MjA3MTA4NzA1NX0.19RtsJxGGrSzLiD8GL0jwHpd-vj8rNhLEx03eG5AcLQ';
+    
+    console.log('Supabase library:', window.supabase);
+    console.log('URL:', SUPABASE_URL);
+    console.log('Key length:', SUPABASE_ANON_KEY.length);
+    
+    let client;
+    try {
+      client = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+      console.log('Client created:', client);
+    } catch (error) {
+      console.error('Error creating client:', error);
+    }
+    
+    async function testConnection() {
+      const resultDiv = document.getElementById('result');
+      resultDiv.innerHTML = 'Testing...';
+      
+      try {
+        console.log('Testing connection...');
+        
+        // Test 1: Simple select
+        console.log('Test 1: Simple select');
+        const { data, error } = await client.from('reports').select('count', { count: 'exact' });
+        
+        if (error) {
+          console.error('Error in select:', error);
+          resultDiv.innerHTML = `<div style="color: red;">Error: ${JSON.stringify(error, null, 2)}</div>`;
+          return;
+        }
+        
+        console.log('Select successful:', data);
+        
+        // Test 2: Try to insert a simple record
+        console.log('Test 2: Insert test');
+        const testRecord = {
+          name: 'Test Report',
+          headers: JSON.stringify(['col1', 'col2']),
+          data: JSON.stringify([['row1col1', 'row1col2']]),
+          record_count: 1
+        };
+        
+        const { data: insertData, error: insertError } = await client
+          .from('reports')
+          .insert([testRecord]);
+        
+        if (insertError) {
+          console.error('Error in insert:', insertError);
+          resultDiv.innerHTML = `<div style="color: red;">Insert Error: ${JSON.stringify(insertError, null, 2)}</div>`;
+          return;
+        }
+        
+        console.log('Insert successful:', insertData);
+        resultDiv.innerHTML = `<div style="color: green;">Connection successful!<br>Insert result: ${JSON.stringify(insertData, null, 2)}</div>`;
+        
+      } catch (error) {
+        console.error('Unexpected error:', error);
+        resultDiv.innerHTML = `<div style="color: red;">Unexpected error: ${error.message}</div>`;
+      }
+    }
+  </script>
+</body>
+</html>
