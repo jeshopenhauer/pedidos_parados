@@ -1,0 +1,25 @@
+{
+  "name": "pedidos-parados-local",
+  "version": "1.0.0",
+  "description": "Sistema local de gestión de pedidos parados",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "nodemon server.js"
+  },
+  "dependencies": {
+    "express": "^4.19.2",
+    "multer": "^1.4.5-lts.1",
+    "cors": "^2.8.5"
+  },
+  "devDependencies": {
+    "nodemon": "^3.0.1"
+  },
+  "keywords": [
+    "csv",
+    "reports",
+    "local-server"
+  ],
+  "author": "Tu Nombre",
+  "license": "MIT"
+}

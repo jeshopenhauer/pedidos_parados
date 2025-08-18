@@ -1,0 +1,353 @@
+[
+  {
+    "id": 1755518907888,
+    "name": "Reporte de pedidos parados - 18/8/2025",
+    "date": "18/8/2025, 14:08:27",
+    "fileName": "Requisitions_-_Department_view.csv",
+    "headers": [
+      "Requisition #",
+      "Status",
+      "Net total",
+      "Originated by",
+      "Date of last approval",
+      "Sent for approval date",
+      "Last approver of the document",
+      "Last approver to date",
+      "Requisition #(Corcentric ID)"
+    ],
+    "data": [
+      [
+        "MTPR216677",
+        "More information needed",
+        "150.00000",
+        "mohammed.el-kasri@valeo.com",
+        "2025-05-27 14:20:26",
+        "2025-05-27 10:52:26",
+        "ricardo.garcia-rodriguez@valeo.com",
+        "jose-maria.lopez@valeo.com",
+        "12780012"
+      ],
+      [
+        "MTPR217772",
+        "More information needed",
+        "3900.00000",
+        "francisco-miguel.toval@valeo.com",
+        "2025-06-16 15:41:20",
+        "2025-06-16 15:40:25",
+        "ricardo.garcia-ruiviejo@valeo.com",
+        "jose-maria.lopez@valeo.com",
+        "12979800"
+      ],
+      [
+        "BO0132809",
+        "To be approved",
+        "1500.00000",
+        "quentin.cavard@valeo.com",
+        "2025-06-30 16:48:28",
+        "2025-06-23 10:46:06",
+        "francois-xavier.amiel@valeo.com",
+        "quentin.cavard@valeo.com",
+        "13041201"
+      ],
+      [
+        "CW0165414",
+        "To be approved",
+        "1630.00000",
+        "jesus.perez-oliver.ext@valeo.com",
+        "2025-07-07 16:46:20",
+        "2025-06-30 10:50:53",
+        "monika.pajak@valeo.com",
+        "jesus.perez-oliver.ext@valeo.com",
+        "13059357"
+      ],
+      [
+        "CW0165513",
+        "More information needed",
+        "3300.52000",
+        "jesus.perez-oliver.ext@valeo.com",
+        "2025-07-10 08:04:55",
+        "2025-07-03 15:10:23",
+        "hubert.ziemba@valeo.com",
+        "malgorzata.wolczanska@valeo.com",
+        "13144254"
+      ],
+      [
+        "MTPR219177",
+        "More information needed",
+        "1000.00000",
+        "francisco-miguel.toval@valeo.com",
+        "2025-07-15 09:43:51",
+        "2025-07-10 16:03:08",
+        "carlos.millan@valeo.com",
+        "jose-maria.lopez@valeo.com",
+        "13187187"
+      ],
+      [
+        "CW0165603",
+        "To be approved",
+        "14900.00000",
+        "jesus.perez-oliver.ext@valeo.com",
+        "2025-07-10 07:03:44",
+        "2025-07-09 15:47:42",
+        "monika.pajak@valeo.com",
+        "jesus.perez-oliver.ext@valeo.com",
+        "13189122"
+      ],
+      [
+        "MTPR219319",
+        "More information needed",
+        "2050.00000",
+        "alberto.munoz-moreno@valeo.com",
+        "2025-07-17 09:34:02",
+        "2025-07-14 13:38:15",
+        "carlos.millan@valeo.com",
+        "carlos.perez@valeo.com",
+        "13248837"
+      ],
+      [
+        "MTPR219428",
+        "More information needed",
+        "8978.00000",
+        "francisco-miguel.toval@valeo.com",
+        "2025-07-23 08:38:12",
+        "2025-07-15 15:29:13",
+        "carlos.millan@valeo.com",
+        "jose-maria.lopez@valeo.com",
+        "13261815"
+      ],
+      [
+        "MTPR219438",
+        "More information needed",
+        "49.65000",
+        "francisco-miguel.toval@valeo.com",
+        "2025-07-22 16:50:13",
+        "2025-07-16 06:34:37",
+        "ricardo.garcia-rodriguez@valeo.com",
+        "jose-maria.lopez@valeo.com",
+        "13262112"
+      ],
+      [
+        "MTPR219851",
+        "More information needed",
+        "2180.00000",
+        "francisco-miguel.toval@valeo.com",
+        "2025-07-30 09:30:07",
+        "2025-07-23 14:40:21",
+        "carlos.millan@valeo.com",
+        "jose-maria.lopez@valeo.com",
+        "13318380"
+      ],
+      [
+        "BO0133121",
+        "To be approved",
+        "330.00000",
+        "quentin.cavard@valeo.com",
+        "",
+        "2025-07-23 16:23:33",
+        "",
+        "quentin.cavard@valeo.com",
+        "13336635"
+      ],
+      [
+        "MTPR219803",
+        "To be approved",
+        "500.00000",
+        "mohammed.el-kasri@valeo.com",
+        "2025-07-23 12:16:02",
+        "2025-07-23 05:49:38",
+        "ricardo.garcia-rodriguez@valeo.com",
+        "ricardo.garcia-rodriguez@valeo.com",
+        "13344981"
+      ],
+      [
+        "MTPR219978",
+        "To be approved",
+        "5664.00000",
+        "jesus.moral-aranda@valeo.com",
+        "2025-08-13 04:48:43",
+        "2025-07-25 11:47:00",
+        "balaji.ravichandran@valeo.com",
+        "balaji.ravichandran@valeo.com",
+        "13366854"
+      ],
+      [
+        "MTPR220133",
+        "To be approved",
+        "4700.00000",
+        "jesus.moral-aranda@valeo.com",
+        "2025-07-31 09:50:30",
+        "2025-07-31 09:10:45",
+        "ricardo.garcia-rodriguez@valeo.com",
+        "jesus.moral-aranda@valeo.com",
+        "13407414"
+      ],
+      [
+        "MTPR220190",
+        "To be approved",
+        "17625.96000",
+        "javier.pardo@valeo.com",
+        "",
+        "2025-08-01 08:24:41",
+        "",
+        "",
+        "13411689"
+      ],
+      [
+        "BO0133192",
+        "To be approved",
+        "11064.00000",
+        "quentin.cavard@valeo.com",
+        "",
+        "2025-07-31 10:51:06",
+        "",
+        "",
+        "13418235"
+      ],
+      [
+        "MTPR220276",
+        "To be approved",
+        "183.60000",
+        "sandra.dorado-pena@valeo.com",
+        "",
+        "2025-08-04 08:01:46",
+        "",
+        "",
+        "13426857"
+      ],
+      [
+        "MTPR220279",
+        "To be approved",
+        "183.60000",
+        "sandra.dorado-pena@valeo.com",
+        "",
+        "2025-08-04 08:05:59",
+        "",
+        "",
+        "13435368"
+      ],
+      [
+        "MTPR220283",
+        "To be approved",
+        "183.60000",
+        "sandra.dorado-pena@valeo.com",
+        "",
+        "2025-08-04 08:09:14",
+        "",
+        "",
+        "13435410"
+      ],
+      [
+        "MTPR220285",
+        "To be approved",
+        "183.60000",
+        "sandra.dorado-pena@valeo.com",
+        "",
+        "2025-08-04 08:12:02",
+        "",
+        "",
+        "13435461"
+      ],
+      [
+        "MTPR220288",
+        "To be approved",
+        "183.60000",
+        "sandra.dorado-pena@valeo.com",
+        "",
+        "2025-08-04 08:14:51",
+        "",
+        "",
+        "13435512"
+      ],
+      [
+        "MTPR220290",
+        "To be approved",
+        "183.60000",
+        "sandra.dorado-pena@valeo.com",
+        "",
+        "2025-08-04 08:17:09",
+        "",
+        "",
+        "13435551"
+      ],
+      [
+        "BO0133209",
+        "To be approved",
+        "5900.00000",
+        "noelia.ruiz@valeo.com",
+        "2025-08-04 09:19:22",
+        "2025-08-04 09:13:19",
+        "francisco.molina@valeo.com",
+        "francisco.molina@valeo.com",
+        "13436100"
+      ],
+      [
+        "BO0133210",
+        "To be approved",
+        "6652.80000",
+        "noelia.ruiz@valeo.com",
+        "",
+        "2025-08-04 10:37:19",
+        "",
+        "",
+        "13436847"
+      ],
+      [
+        "BO0133215",
+        "To be approved",
+        "365.78000",
+        "jesus.perez-oliver.ext@valeo.com",
+        "",
+        "2025-08-08 11:56:28",
+        "",
+        "",
+        "13440786"
+      ],
+      [
+        "MTPR220348",
+        "To be approved",
+        "183.60000",
+        "sandra.dorado-pena@valeo.com",
+        "",
+        "2025-08-04 15:38:17",
+        "",
+        "",
+        "13442649"
+      ],
+      [
+        "MTPR220388",
+        "To be approved",
+        "183.60000",
+        "sandra.dorado-pena@valeo.com",
+        "",
+        "2025-08-05 14:49:05",
+        "",
+        "",
+        "13443078"
+      ],
+      [
+        "MTPR220794",
+        "To be approved",
+        "10.00000",
+        "macarena.fernandez-torres.ext@valeo.com",
+        "2025-08-14 16:20:05",
+        "2025-08-14 09:05:14",
+        "ricardo.garcia-rodriguez@valeo.com",
+        "ricardo.garcia-rodriguez@valeo.com",
+        "13527291"
+      ],
+      [
+        "MTPR220805",
+        "To be approved",
+        "1619.32000",
+        "rosa-maria.jimenez@valeo.com",
+        "",
+        "2025-08-14 13:15:20",
+        "",
+        "",
+        "13529505"
+      ]
+    ],
+    "recordCount": 30,
+    "created_at": "2025-08-18T12:08:27.961Z"
+  }
+]

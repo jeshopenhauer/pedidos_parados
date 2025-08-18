@@ -1,52 +1,137 @@
-https://jeshopenhauer.github.io/pedidos_parados/
+# 🚀 SERVIDOR LOCAL - Pedidos Parados
 
-# Gestor de Pedidos Parados
+## 📋 INFORMACIÓN RÁPIDA
 
-Esta aplicación permite cargar, filtrar y visualizar datos de pedidos parados desde archivos CSV con funcionalidad multiusuario usando Supabase.
+### 🌐 **Link para tu oficina:**
+```
+http://10.252.15.122:3000
+```
 
-## Características
+### 💻 **Link para ti (local):**
+```
+http://localhost:3000
+```
 
-- Carga de archivos CSV
-- Filtrado automático por estado "More information needed" o "To be approved"
-- Visualización de datos en tablas interactivas
-- **Almacenamiento compartido** - Los reportes se guardan en Supabase para acceso multiusuario
-- Impresión de reportes
-- Interfaz moderna y responsive
+---
 
-## Estructura de Archivos
+## ⚡ CÓMO INICIAR EL SERVIDOR
 
-- `index.html` - Interfaz de usuario principal
-- `style.css` - Estilos de la aplicación
-- `script.js` - Lógica del cliente
-- `supabase-client.js` - Cliente y configuración de Supabase
-- `supabase-setup.sql` - Script SQL para configurar la base de datos
-- `supabase-test-panel.html` - Panel de verificación de conexión Supabase
-- `data/` - Archivos CSV de ejemplo
-- `figures/` - Imágenes y capturas
+### Opción 1: **Automático (Recomendado)**
+1. Doble clic en: `iniciar-servidor.bat`
+2. Espera a que aparezca el mensaje "Servidor listo"
+3. ¡Listo! Ya puedes compartir el link
 
-## Uso
+### Opción 2: **Manual**
+```bash
+# En PowerShell o Git Bash
+cd ~/Desktop/pedidos_parados
+~/Desktop/node/node.exe server.js
+```
 
-1. **Accede a la aplicación**: https://jeshopenhauer.github.io/pedidos_parados/
-2. **Carga un archivo CSV** usando el botón "Seleccionar Archivo"
-3. **El archivo se procesa automáticamente** y filtra registros con estado "More information needed" o "To be approved"
-4. **El reporte se guarda en Supabase** y está disponible para todos los usuarios
-5. **Otros usuarios pueden ver** los reportes subidos en tiempo real
-6. **Usa los botones de acción** para ver detalles, imprimir o eliminar reportes
+---
 
-## Configuración Técnica
+## 👥 PARA TUS COMPAÑEROS DE OFICINA
 
-### Base de Datos (Supabase)
-- **URL**: https://jyhgslhndkwmawzkawni.supabase.co
-- **Tabla**: `reports` con columnas `id`, `created_at`, `name`, `headers`, `data`, `record_count`
-- **Políticas RLS**: Configuradas para acceso público de lectura/escritura
+### **Instrucciones simples:**
+1. Abrir navegador (Chrome, Firefox, Edge)
+2. Ir a: `http://10.252.15.122:3000`
+3. ¡Ya pueden ver todos los reportes!
 
-### Verificación de Conexión
-- **Panel de Test**: Abre `supabase-test-panel.html` para verificar la conexión
-- **Diagnósticos**: El panel incluye tests de conexión, lectura, escritura y eliminación
+### **¿Qué pueden hacer?**
+- ✅ Ver todos los reportes que subas
+- ✅ Ver detalles de cada reporte
+- ✅ Imprimir reportes
+- ✅ Actualización automática cada 5 segundos
+- ❌ NO pueden subir archivos
+- ❌ NO pueden eliminar reportes
 
-## Funcionamiento Multiusuario
+---
 
-1. **Usuario A** sube un CSV → Se guarda en Supabase
-2. **Usuario B** entra a la aplicación → Ve automáticamente el reporte de Usuario A
-3. **Cualquier usuario** puede eliminar reportes
-4. **Los cambios se sincronizan** automáticamente entre todos los usuarios
+## 🔧 ADMINISTRACIÓN (SOLO TÚ)
+
+### **Subir reportes:**
+1. Ve a: `http://localhost:3000`
+2. Haz clic en "Seleccionar Archivo"
+3. Elige tu archivo CSV
+4. ¡Automáticamente aparece para todos!
+
+### **Eliminar reportes:**
+- Haz clic en el icono de basura (🗑️) en cualquier reporte
+
+### **Parar el servidor:**
+- `Ctrl + C` en la ventana del servidor
+- O cerrar la ventana
+
+---
+
+## 📁 ARCHIVOS DEL SISTEMA
+
+```
+pedidos_parados/
+├── index.html          # Interfaz web
+├── script-local.js     # Lógica del cliente
+├── server.js           # Servidor backend
+├── style.css           # Estilos de la aplicación
+├── package.json        # Configuración Node.js
+├── iniciar-servidor.bat # Script de inicio automático
+├── reports.json        # Base de datos de reportes (se crea automáticamente)
+└── data/               # Archivos CSV de ejemplo
+```
+
+---
+
+## 🔄 USO DIARIO
+
+### **Para iniciar cada día:**
+1. Doble clic en `iniciar-servidor.bat`
+2. Compartir: `http://10.252.15.122:3000`
+
+### **Para detener:**
+- `Ctrl + C` en la ventana del servidor
+
+---
+
+## 🚨 SOLUCIÓN DE PROBLEMAS
+
+### **"No se puede conectar desde otros PCs"**
+- Verifica que están en la misma red WiFi
+- Usa exactamente esta IP: `10.252.15.122`
+- Temporalmente desactiva el firewall de Windows
+
+### **"El servidor no inicia"**
+- Verifica que Node.js esté en: `~/Desktop/node/`
+- Ejecuta manualmente: `~/Desktop/node/node.exe server.js`
+
+### **"No aparecen los reportes"**
+- Espera 5 segundos (actualización automática)
+- Refresca la página (F5)
+
+---
+
+## 💡 CÓMO FUNCIONA
+
+1. **Tu PC = Servidor**
+   - Almacena todos los reportes
+   - Procesa archivos CSV
+   - Sirve la aplicación web
+
+2. **Otros PCs = Clientes**
+   - Se conectan a tu PC
+   - Ven reportes en tiempo real
+   - Solo lectura
+
+3. **Sincronización**
+   - Actualización automática cada 5 segundos
+   - Sin necesidad de refrescar manualmente
+
+---
+
+## 🎯 ¡LISTO PARA USAR!
+
+✅ **Archivos limpiados y organizados**
+✅ **README actualizado con instrucciones claras**
+✅ **Script de inicio configurado para Node.js portátil**
+✅ **Link específico para tu oficina: `http://10.252.15.122:3000`**
+
+### **Próximo paso:**
+Ejecuta `iniciar-servidor.bat` y comparte el link con tu equipo!
