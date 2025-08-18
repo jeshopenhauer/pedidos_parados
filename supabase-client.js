@@ -23,9 +23,10 @@ class SupabaseReportManager {
         .from('reports')
         .insert([{
           name: report.name,
+          date: report.date || new Date().toISOString(),
+          filename: report.fileName || report.name,
           headers: JSON.stringify(report.headers),
-          data: JSON.stringify(report.data),
-          record_count: report.recordCount || 0
+          data: JSON.stringify(report.data)
         }]);
       
       if (error) throw error;
@@ -59,7 +60,9 @@ class SupabaseReportManager {
         ...report,
         headers: typeof report.headers === 'string' ? JSON.parse(report.headers) : report.headers,
         data: typeof report.data === 'string' ? JSON.parse(report.data) : report.data,
-        recordCount: report.record_count || 0
+        recordCount: Array.isArray(report.data) ? report.data.length : 
+                    (typeof report.data === 'string' ? JSON.parse(report.data).length : 0),
+        fileName: report.filename
       }));
       
       return processedData;
