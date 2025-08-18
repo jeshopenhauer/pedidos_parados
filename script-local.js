@@ -45,8 +45,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const adminHosts = [
       'localhost',
       '127.0.0.1',
-      '10.252.15.122',  // Tu IP principal
-      '10.252.15.245'   // IP adicional de administrador
+      '10.252.15.122',  // Tu IP
+      '10.252.15.245'   // IP de tu jefe
     ];
     
     if (adminHosts.includes(hostname)) {
