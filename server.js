@@ -12,6 +12,56 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static(path.join(__dirname)));
 
+// Middleware para logging de usuarios
+app.use((req, res, next) => {
+  logUserActivity(req);
+  next();
+});
+
+// Archivo para logs de usuarios
+const userLogsFile = path.join(__dirname, 'user-logs.json');
+
+// Función para registrar actividad de usuarios
+function logUserActivity(req) {
+  const userInfo = {
+    timestamp: new Date().toISOString(),
+    ip: req.ip || req.connection.remoteAddress || req.socket.remoteAddress || 
+        (req.connection.socket ? req.connection.socket.remoteAddress : null),
+    userAgent: req.get('User-Agent'),
+    url: req.url,
+    method: req.method,
+    referer: req.get('Referer'),
+    acceptLanguage: req.get('Accept-Language'),
+    host: req.get('Host')
+  };
+
+  // Leer logs existentes
+  let logs = [];
+  try {
+    if (fs.existsSync(userLogsFile)) {
+      const data = fs.readFileSync(userLogsFile, 'utf8');
+      logs = JSON.parse(data);
+    }
+  } catch (error) {
+    console.error('Error leyendo logs:', error);
+  }
+
+  // Agregar nuevo log
+  logs.push(userInfo);
+
+  // Mantener solo los últimos 1000 logs
+  if (logs.length > 1000) {
+    logs = logs.slice(-1000);
+  }
+
+  // Guardar logs
+  try {
+    fs.writeFileSync(userLogsFile, JSON.stringify(logs, null, 2));
+  } catch (error) {
+    console.error('Error guardando logs:', error);
+  }
+}
+
 // Configuración de multer para manejar uploads
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
@@ -139,6 +189,92 @@ function parseCSVRow(row) {
 }
 
 // Rutas API
+
+// Obtener estadísticas de usuarios (solo para admin)
+app.get('/api/user-stats', (req, res) => {
+  try {
+    if (!fs.existsSync(userLogsFile)) {
+      return res.json({ users: [], stats: {} });
+    }
+
+    const logs = JSON.parse(fs.readFileSync(userLogsFile, 'utf8'));
+    
+    // Procesar estadísticas
+    const stats = processUserStats(logs);
+    
+    res.json(stats);
+  } catch (error) {
+    console.error('Error obteniendo estadísticas:', error);
+    res.status(500).json({ error: 'Error interno del servidor' });
+  }
+});
+
+// Función para procesar estadísticas de usuarios
+function processUserStats(logs) {
+  const uniqueUsers = {};
+  const hourlyActivity = {};
+  const pageViews = {};
+  const browsers = {};
+  
+  logs.forEach(log => {
+    const ip = log.ip;
+    const hour = new Date(log.timestamp).getHours();
+    const userAgent = log.userAgent || 'Unknown';
+    const page = log.url;
+    
+    // Usuarios únicos
+    if (!uniqueUsers[ip]) {
+      uniqueUsers[ip] = {
+        ip: ip,
+        firstSeen: log.timestamp,
+        lastSeen: log.timestamp,
+        totalRequests: 0,
+        userAgent: userAgent,
+        pages: []
+      };
+    }
+    
+    uniqueUsers[ip].lastSeen = log.timestamp;
+    uniqueUsers[ip].totalRequests++;
+    
+    if (!uniqueUsers[ip].pages.includes(page)) {
+      uniqueUsers[ip].pages.push(page);
+    }
+    
+    // Actividad por hora
+    hourlyActivity[hour] = (hourlyActivity[hour] || 0) + 1;
+    
+    // Páginas más visitadas
+    pageViews[page] = (pageViews[page] || 0) + 1;
+    
+    // Navegadores
+    const browser = extractBrowser(userAgent);
+    browsers[browser] = (browsers[browser] || 0) + 1;
+  });
+  
+  return {
+    totalUsers: Object.keys(uniqueUsers).length,
+    totalRequests: logs.length,
+    users: Object.values(uniqueUsers),
+    hourlyActivity: hourlyActivity,
+    pageViews: pageViews,
+    browsers: browsers,
+    lastUpdate: new Date().toISOString()
+  };
+}
+
+// Función para extraer información del navegador
+function extractBrowser(userAgent) {
+  if (!userAgent) return 'Unknown';
+  
+  if (userAgent.includes('Chrome')) return 'Chrome';
+  if (userAgent.includes('Firefox')) return 'Firefox';
+  if (userAgent.includes('Safari')) return 'Safari';
+  if (userAgent.includes('Edge')) return 'Edge';
+  if (userAgent.includes('Opera')) return 'Opera';
+  
+  return 'Other';
+}
 
 // Obtener todos los reportes
 app.get('/api/reports', (req, res) => {

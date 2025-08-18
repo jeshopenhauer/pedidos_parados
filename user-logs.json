@@ -1,0 +1,42 @@
+[
+  {
+    "timestamp": "2025-08-18T12:35:29.849Z",
+    "ip": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.103.1 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://localhost:3000/?id=8acbb4dc-4a47-451c-b29c-4ea9edcc72d8&vscodeBrowserReqId=1755519964265",
+    "acceptLanguage": "en-US",
+    "host": "localhost:3000"
+  },
+  {
+    "timestamp": "2025-08-18T12:35:34.859Z",
+    "ip": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.103.1 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://localhost:3000/?id=8acbb4dc-4a47-451c-b29c-4ea9edcc72d8&vscodeBrowserReqId=1755519964265",
+    "acceptLanguage": "en-US",
+    "host": "localhost:3000"
+  },
+  {
+    "timestamp": "2025-08-18T12:35:39.862Z",
+    "ip": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.103.1 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://localhost:3000/?id=8acbb4dc-4a47-451c-b29c-4ea9edcc72d8&vscodeBrowserReqId=1755519964265",
+    "acceptLanguage": "en-US",
+    "host": "localhost:3000"
+  },
+  {
+    "timestamp": "2025-08-18T12:35:40.193Z",
+    "ip": "127.0.0.1",
+    "userAgent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Code/1.103.1 Chrome/138.0.7204.100 Electron/37.2.3 Safari/537.36",
+    "url": "/api/reports",
+    "method": "GET",
+    "referer": "http://localhost:3000/?id=8acbb4dc-4a47-451c-b29c-4ea9edcc72d8&vscodeBrowserReqId=1755520540086",
+    "acceptLanguage": "en-US",
+    "host": "localhost:3000"
+  }
+]

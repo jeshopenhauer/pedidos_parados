@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Estadísticas de Usuarios - Pedidos Parados</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .stats-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .stats-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+        }
+        
+        .stat-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #1e40af;
+            margin-bottom: 5px;
+        }
+        
+        .stat-description {
+            font-size: 0.9rem;
+            color: #6b7280;
+        }
+        
+        .users-table {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .users-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .users-table th,
+        .users-table td {
+            text-align: left;
+            padding: 12px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .users-table th {
+            background-color: #f9fafb;
+            font-weight: 600;
+            color: #374151;
+        }
+        
+        .browser-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            background: #e0e7ff;
+            color: #3730a3;
+        }
+        
+        .refresh-btn {
+            background: #1e40af;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin: 20px auto;
+        }
+        
+        .refresh-btn:hover {
+            background: #1d4ed8;
+        }
+        
+        .back-btn {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #6b7280;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .back-btn:hover {
+            background: #4b5563;
+        }
+    </style>
+</head>
+<body>
+    <a href="/" class="back-btn">
+        <i class="fas fa-arrow-left"></i>
+        Volver a Reportes
+    </a>
+
+    <div class="stats-container">
+        <div class="stats-header">
+            <h1>📊 Estadísticas de Usuarios</h1>
+            <p>Información sobre quién accede a tu sistema</p>
+            <button class="refresh-btn" onclick="loadStats()">
+                <i class="fas fa-sync-alt"></i>
+                Actualizar Datos
+            </button>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-users"></i>
+                    Usuarios Únicos
+                </div>
+                <div class="stat-value" id="totalUsers">-</div>
+                <div class="stat-description">Total de IPs diferentes</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-mouse-pointer"></i>
+                    Total de Clicks
+                </div>
+                <div class="stat-value" id="totalRequests">-</div>
+                <div class="stat-description">Requests al servidor</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-clock"></i>
+                    Última Actividad
+                </div>
+                <div class="stat-value" id="lastUpdate" style="font-size: 1.2rem;">-</div>
+                <div class="stat-description">Última conexión registrada</div>
+            </div>
+
+            <div class="stat-card">
+                <div class="stat-title">
+                    <i class="fas fa-globe"></i>
+                    Navegador Más Usado
+                </div>
+                <div class="stat-value" id="topBrowser" style="font-size: 1.5rem;">-</div>
+                <div class="stat-description">Navegador preferido</div>
+            </div>
+        </div>
+
+        <div class="users-table">
+            <table>
+                <thead>
+                    <tr>
+                        <th><i class="fas fa-network-wired"></i> IP</th>
+                        <th><i class="fas fa-clock"></i> Primera Conexión</th>
+                        <th><i class="fas fa-clock"></i> Última Conexión</th>
+                        <th><i class="fas fa-mouse-pointer"></i> Requests</th>
+                        <th><i class="fas fa-browser"></i> Navegador</th>
+                    </tr>
+                </thead>
+                <tbody id="usersTableBody">
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px;">
+                            <i class="fas fa-spinner fa-spin"></i> Cargando datos...
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <script>
+        async function loadStats() {
+            try {
+                const response = await fetch('/api/user-stats');
+                const data = await response.json();
+                
+                // Actualizar estadísticas generales
+                document.getElementById('totalUsers').textContent = data.totalUsers || 0;
+                document.getElementById('totalRequests').textContent = data.totalRequests || 0;
+                document.getElementById('lastUpdate').textContent = data.lastUpdate ? 
+                    new Date(data.lastUpdate).toLocaleString() : '-';
+                
+                // Navegador más usado
+                const browsers = data.browsers || {};
+                const topBrowser = Object.keys(browsers).reduce((a, b) => 
+                    browsers[a] > browsers[b] ? a : b, 'Unknown');
+                document.getElementById('topBrowser').textContent = topBrowser;
+                
+                // Tabla de usuarios
+                const tbody = document.getElementById('usersTableBody');
+                if (data.users && data.users.length > 0) {
+                    tbody.innerHTML = data.users.map(user => `
+                        <tr>
+                            <td><code>${user.ip}</code></td>
+                            <td>${new Date(user.firstSeen).toLocaleString()}</td>
+                            <td>${new Date(user.lastSeen).toLocaleString()}</td>
+                            <td>${user.totalRequests}</td>
+                            <td>
+                                <span class="browser-badge">
+                                    ${extractBrowserName(user.userAgent)}
+                                </span>
+                            </td>
+                        </tr>
+                    `).join('');
+                } else {
+                    tbody.innerHTML = `
+                        <tr>
+                            <td colspan="5" style="text-align: center; padding: 40px;">
+                                <i class="fas fa-users"></i><br>
+                                No hay usuarios registrados aún
+                            </td>
+                        </tr>
+                    `;
+                }
+                
+            } catch (error) {
+                console.error('Error cargando estadísticas:', error);
+                document.getElementById('usersTableBody').innerHTML = `
+                    <tr>
+                        <td colspan="5" style="text-align: center; padding: 40px; color: #ef4444;">
+                            <i class="fas fa-exclamation-triangle"></i><br>
+                            Error cargando datos
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+        
+        function extractBrowserName(userAgent) {
+            if (!userAgent) return 'Unknown';
+            
+            if (userAgent.includes('Chrome')) return 'Chrome';
+            if (userAgent.includes('Firefox')) return 'Firefox';
+            if (userAgent.includes('Safari')) return 'Safari';
+            if (userAgent.includes('Edge')) return 'Edge';
+            if (userAgent.includes('Opera')) return 'Opera';
+            
+            return 'Other';
+        }
+        
+        // Cargar datos al iniciar
+        loadStats();
+        
+        // Actualizar cada 30 segundos
+        setInterval(loadStats, 30000);
+    </script>
+</body>
+</html>
