@@ -41,8 +41,16 @@ document.addEventListener('DOMContentLoaded', function() {
     const roleText = document.getElementById('roleText');
     const uploadSection = document.getElementById('uploadSection');
     
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      // Usuario administrador (acceso local)
+    // Lista de IPs y hostnames con permisos de administrador
+    const adminHosts = [
+      'localhost',
+      '127.0.0.1',
+      '10.252.15.122',  // Tu IP principal
+      '10.252.15.245'   // IP adicional de administrador
+    ];
+    
+    if (adminHosts.includes(hostname)) {
+      // Usuario administrador
       isAdmin = true;
       roleStatus.className = 'status-dot admin';
       roleText.textContent = 'Administrador';
