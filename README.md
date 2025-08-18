@@ -6,13 +6,9 @@
 ```
 http://10.252.15.122:3001
 ```
+## modo visualizacion
+http://10.252.15.122:3001?viewer=true
 
-### 💻 **Link para ti (local):**
-```
-http://localhost:3001
-```
-
----
 
 ## ⚡ CÓMO INICIAR EL SERVIDOR
 
@@ -26,26 +22,10 @@ http://localhost:3001
 # En PowerShell o Git Bash
 cd ~/Desktop/pedidos_parados
 ~/Desktop/node/node.exe server.js
-```
 
----
 
-## 👥 PARA TUS COMPAÑEROS DE OFICINA
 
-### **Instrucciones simples:**
-1. Abrir navegador (Chrome, Firefox, Edge)
-2. Ir a: `http://10.252.15.122:3000`
-3. ¡Ya pueden ver todos los reportes!
 
-### **¿Qué pueden hacer?**
-- ✅ Ver todos los reportes que subas
-- ✅ Ver detalles de cada reporte
-- ✅ Imprimir reportes
-- ✅ Actualización automática cada 5 segundos
-- ❌ NO pueden subir archivos
-- ❌ NO pueden eliminar reportes
-
----
 
 ## 🔧 ADMINISTRACIÓN (SOLO TÚ)
 

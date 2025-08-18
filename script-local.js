@@ -41,6 +41,10 @@ document.addEventListener('DOMContentLoaded', function() {
     const roleText = document.getElementById('roleText');
     const uploadSection = document.getElementById('uploadSection');
     
+    // Verificar si se fuerza el modo visualización con parámetro URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const forceViewer = urlParams.get('viewer') === 'true';
+    
     // Lista de IPs y hostnames con permisos de administrador
     const adminHosts = [
       'localhost',
@@ -49,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function() {
       '10.252.15.245'   // IP de tu jefe
     ];
     
-    if (adminHosts.includes(hostname)) {
+    if (adminHosts.includes(hostname) && !forceViewer) {
       // Usuario administrador
       isAdmin = true;
       roleStatus.className = 'status-dot admin';
