@@ -18,8 +18,8 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelector('.refresh-btn').addEventListener('click', refreshReports);
   document.querySelector('.delete-btn').addEventListener('click', deleteAllReports);
   
-  // Cargar reportes guardados
-  loadReportsFromServer();
+  // Cargar reportes desde Supabase
+  loadReportsFromSupabase();
   
   // Funciones principales
   function handleFileUpload(event) {
@@ -142,78 +142,39 @@ document.addEventListener('DOMContentLoaded', function() {
     };
     
     // En un entorno real, enviaríamos los datos procesados al servidor
-    // Por ahora, simulamos almacenamiento local
-    saveReportToServer(report);
+    // Guardar en Supabase
+    saveReportToSupabase(report);
   }
   
-  function saveReportToServer(report) {
-    // Simulación de guardado en servidor (reemplazar en implementación real)
-    /*
-    fetch('/api/save-report', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(report)
-    })
-    .then(response => response.json())
-    .then(data => {
-      loadReportsFromServer();
-    })
-    .catch(error => {
-      console.error('Error:', error);
-      alert('Error al guardar el reporte. Por favor, inténtalo de nuevo.');
-    });
-    */
-    
-    // Simulación (eliminar en implementación real)
-    setTimeout(() => {
-      reports.push(report);
-      localStorage.setItem('csvReports', JSON.stringify(reports));
-      renderReportsList();
-    }, 500);
-  }
-  
-  function loadReportsFromServer() {
-    // Simulación de carga desde servidor (reemplazar en implementación real)
-    /*
-    fetch('/api/get-reports')
-      .then(response => response.json())
-      .then(data => {
-        reports = data;
-        renderReportsList();
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        reportsList.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">
-              <i class="fas fa-exclamation-triangle"></i>
-            </div>
-            <h3 class="empty-state-title">Error al cargar reportes</h3>
-            <p class="empty-state-description">No se pudieron obtener los reportes del servidor</p>
-          </div>
-        `;
-      });
-    */
-    
-    // Simulación (eliminar en implementación real)
-    const savedReports = localStorage.getItem('csvReports');
-    if (savedReports) {
-      reports = JSON.parse(savedReports);
-      // Limpiar reportes que tengan la columna "Approval date"
-      reports = reports.filter(report => {
-        const hasApprovalDate = report.headers && report.headers.includes('Approval date');
-        if (hasApprovalDate) {
-          console.log('Eliminando reporte con columna Approval date:', report.name);
-          return false;
-        }
-        return true;
-      });
-      // Guardar los reportes limpiados
-      localStorage.setItem('csvReports', JSON.stringify(reports));
+  async function saveReportToSupabase(report) {
+    try {
+      showLoading('Guardando reporte...');
+      
+      await SupabaseReportManager.saveReport(report);
+      
+      // Recargar reportes después de guardar
+      await loadReportsFromSupabase();
+      
+    } catch (error) {
+      console.error('Error guardando reporte:', error);
+      showError('Error al guardar el reporte. Por favor, inténtalo de nuevo.');
     }
-    renderReportsList();
+  }
+  
+  async function loadReportsFromSupabase() {
+    try {
+      showLoading('Cargando reportes...');
+      
+      const data = await SupabaseReportManager.getAllReports();
+      reports = data || [];
+      
+      renderReportsList();
+      updateReportsCount();
+      
+    } catch (error) {
+      console.error('Error cargando reportes:', error);
+      showError('No se pudieron cargar los reportes desde el servidor');
+    }
   }
   
   function parseCSVRow(row) {
@@ -240,9 +201,12 @@ document.addEventListener('DOMContentLoaded', function() {
     return result;
   }
   
-  function renderReportsList() {
-    // Actualizar contador
+  function updateReportsCount() {
     reportsCount.textContent = `${reports.length} reportes`;
+  }
+
+  function renderReportsList() {
+    updateReportsCount();
     
     // Verificar si hay reportes
     if (reports.length === 0) {
@@ -353,70 +317,51 @@ document.addEventListener('DOMContentLoaded', function() {
     tableSection.scrollIntoView({ behavior: 'smooth' });
   }
   
-  function deleteReport(reportId) {
+  async function deleteReport(reportId) {
     if (confirm('¿Estás seguro de que deseas eliminar este reporte?')) {
-      // En un entorno real, enviaríamos la solicitud al servidor
-      /*
-      fetch(`/api/delete-report/${reportId}`, {
-        method: 'DELETE'
-      })
-      .then(response => {
-        if (response.ok) {
-          loadReportsFromServer();
-        } else {
-          throw new Error('Error al eliminar el reporte');
+      try {
+        showLoading('Eliminando reporte...');
+        
+        await SupabaseReportManager.deleteReport(reportId);
+        
+        // Recargar reportes después de eliminar
+        await loadReportsFromSupabase();
+        
+        // Si la tabla del reporte está abierta, cerrarla
+        if (tableSection.style.display !== 'none') {
+          closeTable();
         }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('No se pudo eliminar el reporte. Por favor, inténtalo de nuevo.');
-      });
-      */
-      
-      // Simulación (eliminar en implementación real)
-      reports = reports.filter(report => report.id !== reportId);
-      localStorage.setItem('csvReports', JSON.stringify(reports));
-      renderReportsList();
-      
-      // Si la tabla del reporte está abierta, cerrarla
-      if (tableSection.style.display !== 'none') {
-        closeTable();
+        
+      } catch (error) {
+        console.error('Error eliminando reporte:', error);
+        showError('No se pudo eliminar el reporte. Por favor, inténtalo de nuevo.');
       }
     }
   }
   
-  function deleteAllReports() {
+  async function deleteAllReports() {
     if (reports.length === 0) return;
     
     if (confirm('¿Estás seguro de que deseas eliminar todos los reportes?')) {
-      // En un entorno real, enviaríamos la solicitud al servidor
-      /*
-      fetch('/api/delete-all-reports', {
-        method: 'DELETE'
-      })
-      .then(response => {
-        if (response.ok) {
-          loadReportsFromServer();
-        } else {
-          throw new Error('Error al eliminar los reportes');
-        }
-      })
-      .catch(error => {
-        console.error('Error:', error);
-        alert('No se pudieron eliminar los reportes. Por favor, inténtalo de nuevo.');
-      });
-      */
-      
-      // Simulación (eliminar en implementación real)
-      reports = [];
-      localStorage.removeItem('csvReports'); // Limpiar completamente
-      renderReportsList();
-      closeTable();
+      try {
+        showLoading('Eliminando todos los reportes...');
+        
+        await SupabaseReportManager.deleteAllReports();
+        
+        // Recargar reportes después de eliminar
+        await loadReportsFromSupabase();
+        
+        closeTable();
+        
+      } catch (error) {
+        console.error('Error eliminando todos los reportes:', error);
+        showError('No se pudieron eliminar los reportes. Por favor, inténtalo de nuevo.');
+      }
     }
   }
   
-  function refreshReports() {
-    loadReportsFromServer();
+  async function refreshReports() {
+    await loadReportsFromSupabase();
   }
   
   function closeTable() {

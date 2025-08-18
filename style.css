@@ -303,6 +303,33 @@ body {
   color: var(--gray-color);
 }
 
+/* === ERROR STATE === */
+.error-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  text-align: center;
+}
+
+.error-icon {
+  font-size: 48px;
+  color: var(--danger-color);
+  margin-bottom: 16px;
+}
+
+.error-title {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 8px;
+  color: var(--danger-color);
+}
+
+.error-description {
+  color: var(--gray-color);
+}
+
 /* === REPORT ENTRIES === */
 .report-item {
   background: white;
