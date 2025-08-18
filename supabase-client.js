@@ -7,7 +7,8 @@ const SUPABASE_URL = 'https://jyhgslhndkwmawzkawni.supabase.co'; // Reemplaza co
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imp5aGdzbGhuZGt3bWF3emthd25pIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTU1MTEwNTUsImV4cCI6MjA3MTA4NzA1NX0.19RtsJxGGrSzLiD8GL0jwHpd-vj8rNhLEx03eG5AcLQ'; // Reemplaza con tu API Key anon
 
 // Inicializar cliente de Supabase
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const { createClient } = window.supabase || supabase;
+const supabaseClient = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
 // Funciones para manejar reportes en Supabase
 class SupabaseReportManager {
