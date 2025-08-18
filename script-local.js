@@ -43,14 +43,19 @@ document.addEventListener('DOMContentLoaded', function() {
   // Cargar reportes desde el servidor
   loadReportsFromServer();
   
-  // Cargar estadísticas de usuarios
-  loadUserStats();
+  // No cargar estadísticas de usuarios automáticamente
+  // loadUserStats();
   
   // Polling para actualizar reportes cada 5 segundos
   setInterval(loadReportsFromServer, 5000);
   
-  // Polling para actualizar estadísticas de usuarios cada 10 segundos
-  setInterval(loadUserStats, 10000);
+  // Polling para actualizar estadísticas de usuarios cada 10 segundos (solo si está expandido)
+  setInterval(() => {
+    const content = document.getElementById('monitoringContent');
+    if (content && content.style.display !== 'none' && isAdmin) {
+      loadUserStats();
+    }
+  }, 10000);
   
   // Función para detectar si es administrador o usuario de solo visualización
   function detectUserRole() {
@@ -537,6 +542,28 @@ document.addEventListener('DOMContentLoaded', function() {
     return { browser, os };
   }
   
+  // Función para alternar la visibilidad del panel de monitoreo
+  function toggleUserMonitoring() {
+    const content = document.getElementById('monitoringContent');
+    const icon = document.getElementById('monitoringCollapseIcon');
+    
+    if (!content || !icon) return;
+    
+    const isVisible = content.style.display !== 'none';
+    
+    if (isVisible) {
+      // Colapsar
+      content.style.display = 'none';
+      icon.className = 'fas fa-chevron-down collapse-icon';
+    } else {
+      // Expandir
+      content.style.display = 'block';
+      icon.className = 'fas fa-chevron-up collapse-icon';
+      // Cargar datos si no están cargados
+      loadUserStats();
+    }
+  }
+  
   async function clearUserLogs() {
     if (!isAdmin) {
       alert('No tienes permisos para limpiar los logs.');
@@ -625,4 +652,5 @@ document.addEventListener('DOMContentLoaded', function() {
   window.printTable = printTable;
   window.loadReportsFromServer = loadReportsFromServer;
   window.requestAdminAccess = requestAdminAccess;
+  window.toggleUserMonitoring = toggleUserMonitoring;
 });

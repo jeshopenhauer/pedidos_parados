@@ -93,15 +93,16 @@
       <!-- Panel de monitoreo de usuarios (solo admin) -->
       <section class="user-monitoring-section admin-only" id="userMonitoringSection">
         <div class="monitoring-card">
-          <div class="monitoring-header">
+          <div class="monitoring-header" onclick="toggleUserMonitoring()" style="cursor: pointer;">
             <div class="monitoring-title-group">
               <h2 class="monitoring-title">
                 <i class="fas fa-users"></i>
                 Monitoreo de Usuarios
+                <i class="fas fa-chevron-down collapse-icon" id="monitoringCollapseIcon"></i>
               </h2>
               <span class="users-count" id="usersCount">0 usuarios</span>
             </div>
-            <div class="monitoring-actions">
+            <div class="monitoring-actions" onclick="event.stopPropagation()">
               <button class="action-btn refresh-users-btn" title="Actualizar Usuarios">
                 <i class="fas fa-sync-alt"></i>
               </button>
@@ -111,7 +112,7 @@
             </div>
           </div>
           
-          <div class="monitoring-content">
+          <div class="monitoring-content" id="monitoringContent" style="display: none;">
             <div id="usersList" class="users-list">
               <!-- Las entradas de usuarios serán generadas dinámicamente -->
               <div class="empty-state">

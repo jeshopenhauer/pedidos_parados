@@ -1087,6 +1087,11 @@ td:nth-child(3) {
   padding: 20px;
   background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
   color: white;
+  transition: var(--transition);
+}
+
+.monitoring-header:hover {
+  background: linear-gradient(135deg, var(--primary-dark), var(--primary-color));
 }
 
 .monitoring-title-group {
@@ -1102,6 +1107,12 @@ td:nth-child(3) {
   display: flex;
   align-items: center;
   gap: 10px;
+}
+
+.collapse-icon {
+  margin-left: 10px;
+  transition: transform 0.3s ease;
+  font-size: 0.9rem;
 }
 
 .users-count {
